@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전기기사 CBT 문제은행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF1F5;
+    --card:#FBFCFD;
+    --white:#ffffff;
+    --ink:#16202E;
+    --ink-soft:#5A6675;
+    --ink-faint:#8B96A3;
+    --rule:#C9D2DC;
+    --rule-soft:#DFE5EC;
+    --pen:#D6304A;
+    --pen-deep:#BD2440;
+    --blue:#2F6F8F;
+    --gold:#C8922B;
+    --ok:#2F6F8F;
+    --shadow:0 1px 0 rgba(22,32,46,.04), 0 8px 24px -18px rgba(22,32,46,.5);
+    --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans:"IBM Plex Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+    --serif:"Gowun Batang", "Nanum Myeongjo", serif;
+    --radius:3px;
+    --maxw:1040px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:linear-gradient(var(--rule-soft) 1px, transparent 1px);
+    background-size:100% 32px;
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  button,input,select,textarea{font-family:inherit;}
+  ::selection{background:var(--pen);color:#fff;}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:1px;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  .app{max-width:var(--maxw);margin:0 auto;padding:0 24px 72px;}
+
+  /* ---- top nav ---- */
+  .topnav{
+    border-bottom:1px solid var(--rule);
+    background:rgba(238,241,245,.92);
+    backdrop-filter:blur(6px);
+    position:sticky;top:0;z-index:30;
+  }
+  .topnav-in{
+    max-width:var(--maxw);margin:0 auto;padding:16px 24px;
+    display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+  }
+  .brand{font-family:var(--serif);font-weight:700;font-size:21px;color:var(--ink);white-space:nowrap;letter-spacing:.01em;}
+  .brand span{color:var(--pen);}
+  .tabbar{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap;}
+  .tabbar .tab{
+    display:flex;align-items:center;gap:7px;
+    font-family:var(--sans);font-size:14.5px;font-weight:500;color:var(--ink-soft);
+    padding:9px 14px;border-radius:2px;border:1px solid transparent;
+    background:none;cursor:pointer;
+  }
+  .tabbar .tab:hover{color:var(--ink);background:var(--card);}
+  .tabbar .tab.active{color:var(--pen);border-color:var(--rule);background:var(--card);box-shadow:inset 0 -2px 0 var(--pen);}
+  .tabbar .tab .ic{font-family:var(--mono);font-size:14px;line-height:1;}
+
+  /* ---- title block / ledger header ---- */
+  .titleblock{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:30px 30px 0;
+    margin:28px 0 22px;
+  }
+  .tb-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--ink-soft);text-transform:uppercase;}
+  .tb-title{font-family:var(--serif);font-weight:700;font-size:36px;margin:8px 0 6px;letter-spacing:-.005em;color:var(--ink);}
+  .tb-sub{font-size:15.5px;color:var(--ink-soft);margin-bottom:24px;line-height:1.65;max-width:640px;}
+  .tb-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--rule);
+  }
+  .tb-cell{
+    border-right:1px dotted var(--rule);
+    padding:18px 14px 22px;
+    text-align:center;
+  }
+  .tb-cell:last-child{border-right:none;}
+  .tb-cell .v{font-family:var(--mono);font-size:27px;font-weight:600;color:var(--ink);}
+  #stat-bookmarks{color:var(--gold);}
+  .tb-cell .k{font-family:var(--mono);font-size:11px;color:var(--ink-soft);margin-top:6px;letter-spacing:.1em;text-transform:uppercase;}
+
+  /* ---- generic panel / card ---- */
+  .panel{
+    border:1px solid var(--rule);
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:26px;
+    margin-bottom:20px;
+  }
+  .panel h2{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:500;margin:0 0 18px;color:var(--ink-soft);display:flex;align-items:center;gap:9px;
+  }
+  .panel h2 .tag-dot{width:6px;height:6px;background:var(--pen);border-radius:1px;transform:rotate(45deg);flex:none;}
+  .muted{color:var(--ink-soft);font-size:14.5px;line-height:1.65;}
+  .empty{
+    border:1px dashed var(--rule);border-radius:var(--radius);
+    padding:34px 22px;text-align:center;color:var(--ink-soft);font-size:14.5px;line-height:1.75;
+    background:var(--paper);
+  }
+
+  /* ---- action cards (home) ---- */
+  .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+  .action-card{
+    grid-column:span 2;
+    border:1px solid var(--rule);background:var(--card);
+    border-radius:var(--radius);padding:22px;text-align:left;cursor:pointer;color:var(--ink);
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    box-shadow:var(--shadow);
+    transition:border-color .15s, background .15s, transform .06s;
+  }
+  .action-card:hover{border-color:var(--ink);background:#fff;}
+  .action-card:active{transform:translateY(1px);}
+  .action-card.primary{grid-column:span 2;background:linear-gradient(135deg, var(--card), #fff);}
+  .action-card .ac-code{font-family:var(--mono);font-size:11.5px;color:var(--blue);letter-spacing:.1em;}
+  .action-card .ac-title{font-size:17px;font-weight:600;margin-top:6px;}
+  .action-card .ac-desc{font-size:13.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5;}
+  .action-card .ac-arrow{font-family:var(--mono);color:var(--pen);font-size:20px;flex:none;}
+  .action-card.half{grid-column:span 1;}
+
+  .subject-bar-row{display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;border-bottom:1px dotted var(--rule);}
+  .subject-bar-row:last-child{border-bottom:none;}
+  .subject-bar-row .code{font-family:var(--mono);font-size:12.5px;color:var(--blue);width:32px;flex:none;}
+  .subject-bar-row .name{font-size:14.5px;width:180px;flex:none;color:var(--ink);}
+  .subject-bar-row .bar-track{flex:1;height:7px;background:var(--paper);border-radius:2px;overflow:hidden;border:1px solid var(--rule-soft);}
+  .subject-bar-row .bar-fill{height:100%;background:var(--pen);}
+  .subject-bar-row .count{font-family:var(--mono);font-size:13px;color:var(--ink-soft);width:28px;text-align:right;flex:none;}
+
+  /* ---- chips / tags ---- */
+  .chip{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:13px;padding:5px 12px;border-radius:999px;
+    border:1px solid var(--rule);color:var(--ink-soft);background:var(--paper);
+    cursor:default;
+  }
+  .chip.clickable{cursor:pointer;}
+  .chip.clickable:hover{border-color:var(--blue);color:var(--ink);}
+  .chip.active{background:var(--pen);border-color:var(--pen);color:#fff;font-weight:600;}
+  .chip.subject{border-color:var(--blue);color:var(--blue);background:rgba(47,111,143,.07);}
+  .chip-row{display:flex;flex-wrap:wrap;gap:7px;margin:5px 0;}
+
+  /* ---- bank ---- */
+  .search-input{
+    width:100%;padding:12px 14px;border-radius:2px;border:1px solid var(--rule);
+    background:#fff;color:var(--ink);font-size:15px;margin-bottom:12px;
+  }
+  .search-input::placeholder{color:var(--ink-faint);}
+  .prob-card{
+    border:1px solid var(--rule);background:#fff;border-radius:var(--radius);
+    padding:16px 18px;margin-bottom:10px;cursor:pointer;
+  }
+  .prob-card:hover{border-color:var(--blue);}
+  .prob-card .pc-label{font-size:14.5px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+  .prob-card .pc-q{font-size:13.5px;color:var(--ink-soft);line-height:1.55;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:9px;}
+  .bm-star{background:none;border:none;color:var(--rule);font-size:18px;cursor:pointer;padding:2px 4px;flex:none;}
+  .bm-star.on{color:var(--gold);}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 2px;font-size:14px;color:var(--ink-soft);}
+  .switch{position:relative;width:40px;height:23px;border-radius:12px;background:#fff;border:1px solid var(--rule);cursor:pointer;flex:none;}
+  .switch .knob{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--rule);transition:left .15s, background .15s;}
+  .switch.on{border-color:var(--pen);}
+  .switch.on .knob{left:19px;background:var(--pen);}
+
+  /* ---- buttons ---- */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    padding:13px 20px;border-radius:2px;border:1px solid var(--rule);
+    background:var(--card);color:var(--ink);font-size:15px;font-weight:500;cursor:pointer;
+    width:100%;transition:border-color .15s, background .15s, transform .06s;
+  }
+  .btn:hover{border-color:var(--ink);background:#fff;}
+  .btn:active{transform:translateY(1px);}
+  .btn.primary{background:var(--pen);border-color:var(--pen);color:#fff;}
+  .btn.primary:hover{background:var(--pen-deep);border-color:var(--pen-deep);}
+  .btn.ghost{background:transparent;}
+  .btn-row{display:flex;gap:10px;}
+  .btn-row .btn{width:auto;flex:1;}
+
+  /* ---- quiz setup ---- */
+  .field{margin-bottom:20px;}
+  .field label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:9px;font-weight:600;}
+  .num-input{
+    width:110px;padding:10px 12px;border-radius:2px;border:1px solid var(--rule);
+    background:#fff;color:var(--ink);font-family:var(--mono);font-size:15px;
+  }
+  .warn-box{border:1px solid var(--pen);background:rgba(214,48,74,.06);color:var(--pen-deep);border-radius:var(--radius);padding:12px 14px;font-size:13.5px;margin-bottom:14px;}
+
+  /* ---- quiz taking ---- */
+  .quiz-progress{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .quiz-progress .pcount{font-family:var(--mono);font-size:14px;color:var(--blue);}
+  .qtext{font-size:19px;line-height:1.7;margin:14px 0 20px;white-space:pre-wrap;color:var(--ink);}
+  .choice-btn{
+    display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+    padding:15px 17px;margin-bottom:10px;border-radius:2px;border:1px solid var(--rule);
+    background:#fff;color:var(--ink);font-size:15.5px;line-height:1.55;cursor:pointer;
+  }
+  .choice-btn .idx{font-family:var(--mono);color:var(--blue);flex:none;font-weight:600;}
+  .choice-btn.selected{border-color:var(--pen);background:rgba(214,48,74,.05);}
+  .choice-btn.correct{border-color:var(--ok);background:rgba(47,111,143,.07);}
+  .choice-btn.correct .idx{color:var(--ok);}
+  .choice-btn.incorrect{border-color:var(--pen);background:rgba(214,48,74,.06);}
+  .choice-btn.incorrect .idx{color:var(--pen);}
+  .choice-btn:disabled{cursor:default;}
+
+  .palette{display:grid;grid-template-columns:repeat(10,1fr);gap:7px;margin:16px 0;}
+  .palette button{
+    aspect-ratio:1;border-radius:2px;border:1px solid var(--rule);background:#fff;
+    color:var(--ink-soft);font-family:var(--mono);font-size:12.5px;cursor:pointer;
+  }
+  .palette button.current{border-color:var(--blue);color:var(--blue);font-weight:700;}
+  .palette button.answered{background:var(--card);color:var(--ink);}
+  .palette button.p-correct{background:rgba(47,111,143,.14);border-color:var(--ok);color:var(--ok);}
+  .palette button.p-incorrect{background:rgba(214,48,74,.14);border-color:var(--pen);color:var(--pen);}
+
+  /* ---- results ---- */
+  .score-hero{text-align:center;padding:26px 10px 10px;}
+  .score-hero .big{font-family:var(--mono);font-size:52px;font-weight:600;color:var(--pen);}
+  .score-hero .lbl{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+  .result-row{border:1px solid var(--rule);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:#fff;}
+  .result-row .rr-head{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;}
+  .rr-head .rr-icon{font-family:var(--mono);font-weight:700;flex:none;width:20px;text-align:center;}
+  .rr-icon.ok{color:var(--ok);} .rr-icon.no{color:var(--pen);}
+  .rr-head .rr-label{font-size:14.5px;flex:1;}
+  .rr-head .rr-chev{color:var(--ink-faint);font-family:var(--mono);flex:none;}
+  .rr-body{padding:0 16px 16px;border-top:1px solid var(--rule-soft);}
+
+  /* ---- solution block ---- */
+  .sol-label{font-family:var(--serif);font-size:23px;font-weight:700;margin:2px 0 10px;color:var(--ink);}
+  .solution-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;margin-top:16px;}
+  .sol-left .qtext{margin-top:0;}
+  .sol-right{border-left:1px dotted var(--rule);padding-left:24px;}
+  .sol-right .empty{margin-top:8px;}
+  .sol-block .concept{font-size:15px;line-height:1.75;margin:14px 0;padding:15px 17px;background:var(--paper);border-left:2px solid var(--blue);border-radius:0 2px 2px 0;}
+  .sol-block ol.steps{margin:12px 0;padding-left:22px;font-size:15px;line-height:1.8;color:var(--ink);}
+  .sol-block ol.steps li{margin-bottom:8px;}
+  .sol-block .plain-explain{font-size:15px;line-height:1.8;white-space:pre-wrap;margin:14px 0;}
+  .sc-block{border:1px solid var(--rule-soft);border-radius:var(--radius);padding:13px 15px;margin-bottom:9px;background:#fff;}
+  .sc-q{font-size:13.5px;color:var(--blue);font-weight:700;margin-bottom:6px;}
+  .sc-a{font-size:13.5px;color:var(--ink-soft);line-height:1.65;}
+  .source-note{font-size:12px;color:var(--ink-faint);margin-top:16px;padding-top:12px;border-top:1px dashed var(--rule);line-height:1.65;}
+  .section-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-soft);text-transform:uppercase;margin:18px 0 8px;}
+
+  /* ---- add form ---- */
+  .form-input, .form-select, textarea.form-input{
+    width:100%;padding:11px 13px;border-radius:2px;border:1px solid var(--rule);
+    background:#fff;color:var(--ink);font-size:15px;font-family:inherit;
+  }
+  textarea.form-input{resize:vertical;min-height:80px;line-height:1.55;}
+  .choice-row{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+  .choice-row input[type=radio]{flex:none;accent-color:var(--pen);width:17px;height:17px;}
+  .subtopic-check{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);
+    border:1px solid var(--rule);border-radius:999px;padding:6px 12px 6px 10px;margin:0 7px 7px 0;cursor:pointer;background:var(--paper);}
+  .subtopic-check input{accent-color:var(--pen);}
+  .toast{border:1px solid var(--ok);background:rgba(47,111,143,.07);color:var(--blue);
+    border-radius:var(--radius);padding:12px 14px;font-size:13.5px;margin-bottom:14px;}
+
+  .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--blue);font-size:13.5px;
+    background:none;border:none;cursor:pointer;padding:0 0 14px;font-family:inherit;}
+  .back-link:hover{color:var(--pen);}
+
+  h1,h2,h3{font-family:var(--sans);}
+
+  @media (max-width:860px){
+    .solution-layout{grid-template-columns:1fr;}
+    .sol-right{border-left:none;border-top:1px dotted var(--rule);padding-left:0;padding-top:20px;margin-top:20px;}
+  }
+  @media (max-width:720px){
+    .app{padding:0 14px 60px;}
+    .topnav-in{padding:12px 14px;}
+    .tb-title{font-size:28px;}
+    .tb-grid{grid-template-columns:repeat(2,1fr);}
+    .tb-cell:nth-child(2){border-right:none;}
+    .action-grid{grid-template-columns:1fr;}
+    .action-card, .action-card.primary, .action-card.half{grid-column:span 1;}
+    .palette{grid-template-columns:repeat(6,1fr);}
+  }
+</style>
+</head>
+<body>
+  <header class="topnav">
+    <div class="topnav-in">
+      <div class="brand">전기<span>기사</span> CBT</div>
+      <nav class="tabbar" id="tabbar">
+        <button class="tab" data-action="nav" data-view="home"><span class="ic">⌂</span>홈</button>
+        <button class="tab" data-action="nav" data-view="bank"><span class="ic">▤</span>문제은행</button>
+        <button class="tab" data-action="nav" data-view="quizSetup"><span class="ic">▷</span>모의고사</button>
+        <button class="tab" data-action="nav" data-view="add"><span class="ic">＋</span>등록</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="app">
+    <header class="titleblock" id="titleblock">
+      <div class="tb-eyebrow">한국산업인력공단 · 전기기사 필기</div>
+      <div class="tb-title">CBT 문제은행</div>
+      <div class="tb-sub">기출 복원문제 · 자체 연습문제를 모아 과목·소분류별로 풀고, 꼬리질문까지 정리된 해설로 복습합니다.</div>
+      <div class="tb-grid">
+        <div class="tb-cell"><div class="v" id="stat-total">0</div><div class="k">총 문항</div></div>
+        <div class="tb-cell"><div class="v" id="stat-subjects">5</div><div class="k">과목</div></div>
+        <div class="tb-cell"><div class="v" id="stat-bookmarks">0</div><div class="k">즐겨찾기</div></div>
+        <div class="tb-cell"><div class="v" id="stat-accuracy">–</div><div class="k">최근 정답률</div></div>
+      </div>
+    </header>
+
+    <main id="view-root"></main>
+  </div>
+
+<script src="manifest.js"></script>
+<script>
+/* =========================================================
+   DATA: 과목 / 소분류 taxonomy + seed problems
+========================================================= */
+const SUBJECTS = [
+  { id:'em',  code:'EM', name:'전기자기학',
+    subtopics:['진공 중의 정전계','도체계와 정전용량','유전체','전류(전기저항)','진공 중의 정자계','자성체와 자기회로','전자유도·인덕턴스','전자계(맥스웰 방정식)'] },
+  { id:'pw',  code:'PW', name:'전력공학',
+    subtopics:['선로정수·코로나','전력원선도·안정도','이상전압·피뢰설비','고장계산·단락전류','차단기·보호협조','조상설비·역률개선','전선로·애자','발전방식'] },
+  { id:'me',  code:'ME', name:'전기기기',
+    subtopics:['직류기','동기기','변압기','유도전동기','정류기·전력변환'] },
+  { id:'cc',  code:'CC', name:'회로이론 및 제어공학',
+    subtopics:['기초·교류회로','3상회로','대칭좌표법','라플라스 변환·과도현상','4단자망','전달함수·블록선도','주파수응답·안정도판별','상태방정식','시퀀스제어'] },
+  { id:'reg', code:'RG', name:'전기설비기술기준',
+    subtopics:['접지시스템','저압설비','고압·특고압설비','전선로·배선설비','피뢰설비','발변전소설비'] },
+];
+function subjectOf(id){ return SUBJECTS.find(s=>s.id===id); }
+/* SEED_PROBLEMS는 manifest.js가 선언하고, problems/*.js 파일들이 각자 push()로 채웁니다 (아래 loadProblemScripts 참고). */
+
+/* =========================================================
+   STORAGE
+========================================================= */
+const STORAGE_KEY = 'cbt-user-data-v1';
+async function loadUserData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){ /* no data yet */ }
+  return { customProblems:[], attempts:{}, bookmarks:[] };
+}
+async function saveUserData(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); }
+  catch(e){ console.error('저장 실패', e); }
+}
+
+let userData = { customProblems:[], attempts:{}, bookmarks:[] };
+let state = {
+  view:'home',
+  bank:{ subjectId:null, subtopic:null, q:'', bookmarkedOnly:false },
+  quizCfg:{ subjectIds: SUBJECTS.map(s=>s.id), scope:'all', count:10 },
+  quiz:null,
+  solution:{ id:null, returnView:'bank', selectedIdx:undefined, revealed:false },
+  expanded:{},
+  addMsg:null
+};
+
+/* =========================================================
+   HELPERS
+========================================================= */
+function allProblems(){ return SEED_PROBLEMS.concat(userData.customProblems); }
+function findProblem(id){ return allProblems().find(p=>p.id===id); }
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function lastAttempt(id){
+  const arr = userData.attempts[id];
+  return (arr && arr.length) ? arr[arr.length-1] : null;
+}
+function accuracyOverall(){
+  let total=0, correct=0;
+  Object.values(userData.attempts).forEach(arr=>{
+    arr.forEach(a=>{ total++; if(a.correct) correct++; });
+  });
+  if(total===0) return null;
+  return Math.round((correct/total)*100);
+}
+function el(html){
+  const t = document.createElement('template');
+  t.innerHTML = html.trim();
+  return t.content.firstElementChild;
+}
+function navigate(view, extra){
+  state.view = view;
+  if(extra) Object.assign(state, extra);
+  render();
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   HEADER STATS (updated on every render)
+========================================================= */
+function updateHeaderStats(){
+  document.getElementById('stat-total').textContent = allProblems().length;
+  document.getElementById('stat-bookmarks').textContent = userData.bookmarks.length;
+  const acc = accuracyOverall();
+  document.getElementById('stat-accuracy').textContent = acc==null ? '–' : acc+'%';
+}
+function updateTabbar(){
+  const map = { home:'home', bank:'bank', solution:'bank', quizSetup:'quizSetup', quiz:'quizSetup', quizResult:'quizSetup', add:'add' };
+  const active = map[state.view] || 'home';
+  document.querySelectorAll('#tabbar .tab').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.view === active);
+  });
+}
+
+/* =========================================================
+   ROOT RENDER DISPATCH
+========================================================= */
+function render(){
+  const root = document.getElementById('view-root');
+  root.innerHTML = '';
+  let node;
+  if(state.view==='home') node = viewHome();
+  else if(state.view==='bank') node = viewBank();
+  else if(state.view==='quizSetup') node = viewQuizSetup();
+  else if(state.view==='quiz') node = viewQuiz();
+  else if(state.view==='quizResult') node = viewQuizResult();
+  else if(state.view==='solution') node = viewSolution();
+  else if(state.view==='add') node = viewAdd();
+  else node = viewHome();
+  root.appendChild(node);
+  updateHeaderStats();
+  updateTabbar();
+}
+
+/* =========================================================
+   VIEW: HOME
+========================================================= */
+function viewHome(){
+  const wrap = document.createElement('div');
+  const total = allProblems().length;
+
+  let subjectRows = SUBJECTS.map(s=>{
+    const count = allProblems().filter(p=>p.subjectId===s.id).length;
+    const pct = total ? Math.round((count/total)*100) : 0;
+    return `
+      <div class="subject-bar-row" data-action="goSubject" data-subject="${s.id}">
+        <div class="code">${s.code}</div>
+        <div class="name">${s.name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct,count?6:0)}%"></div></div>
+        <div class="count">${count}</div>
+      </div>`;
+  }).join('');
+
+  wrap.appendChild(el(`
+    <div class="action-grid">
+      <button class="action-card primary" data-action="nav" data-view="quizSetup">
+        <div>
+          <div class="ac-code">MODE · CBT</div>
+          <div class="ac-title">모의고사 시작하기</div>
+          <div class="ac-desc">과목·소분류를 골라 CBT 형식으로 풀어봅니다</div>
+        </div>
+        <div class="ac-arrow">→</div>
+      </button>
+      <button class="action-card half" data-action="nav" data-view="bank">
+        <div>
+          <div class="ac-code">BANK</div>
+          <div class="ac-title">문제은행 둘러보기</div>
+        </div>
+      </button>
+      <button class="action-card half" data-action="nav" data-view="add">
+        <div>
+          <div class="ac-code">NEW</div>
+          <div class="ac-title">새 문제 등록</div>
+        </div>
+      </button>
+    </div>
+  `));
+
+  const panel = el(`
+    <div class="panel">
+      <h2><span class="tag-dot"></span>과목별 현황</h2>
+      ${subjectRows}
+    </div>
+  `);
+  wrap.appendChild(panel);
+
+  if(total <= 3){
+    wrap.appendChild(el(`
+      <div class="empty">
+        지금 문제은행에는 문항이 ${total}개 있습니다.<br>
+        "새 문제 등록"에서 최근 풀었던 기출문제나 오늘 정리한 개념 문제를 추가해보세요.
+      </div>
+    `));
+  }
+
+  const wrongCount = allProblems().filter(p=>{ const a=lastAttempt(p.id); return a && a.correct===false; }).length;
+  if(userData.bookmarks.length || wrongCount){
+    wrap.appendChild(el(`
+      <div class="panel">
+        <h2><span class="tag-dot"></span>빠른 복습</h2>
+        <div class="btn-row">
+          ${userData.bookmarks.length ? `<button class="btn ghost" data-action="quickBookmarks">즐겨찾기 ${userData.bookmarks.length}개 풀기</button>` : ''}
+          ${wrongCount ? `<button class="btn ghost" data-action="quickWrong">오답 ${wrongCount}개 다시 풀기</button>` : ''}
+        </div>
+      </div>
+    `));
+  }
+
+  return wrap;
+}
+
+/* =========================================================
+   VIEW: BANK
+========================================================= */
+function getFilteredProblems(){
+  const f = state.bank;
+  return allProblems().filter(p=>{
+    if(f.subjectId && p.subjectId !== f.subjectId) return false;
+    if(f.subtopic && !p.subtopics.includes(f.subtopic)) return false;
+    if(f.bookmarkedOnly && !userData.bookmarks.includes(p.id)) return false;
+    if(f.q){
+      const hay = (p.label+' '+p.question+' '+p.subtopics.join(' ')).toLowerCase();
+      if(!hay.includes(f.q.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+function renderBankResultsInto(container){
+  const list = getFilteredProblems();
+  container.innerHTML = '';
+  if(list.length === 0){
+    container.appendChild(el(`<div class="empty">조건에 맞는 문제가 없습니다. 필터를 조정하거나 새 문제를 등록해보세요.</div>`));
+    return;
+  }
+  list.forEach(p=>{
+    const subj = subjectOf(p.subjectId);
+    const isBm = userData.bookmarks.includes(p.id);
+    const card = el(`
+      <div class="prob-card" data-action="openSolutionFromBank" data-id="${p.id}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div class="pc-label">${escapeHtml(p.label)}</div>
+          <button class="bm-star ${isBm?'on':''}" data-action="toggleBookmark" data-id="${p.id}" data-stop="1">★</button>
+        </div>
+        <div class="pc-q">${escapeHtml(p.question)}</div>
+        <div class="chip-row">
+          <span class="chip subject">${subj ? subj.name : ''}</span>
+          ${p.subtopics.map(t=>`<span class="chip">${escapeHtml(t)}</span>`).join('')}
+          ${!p.isOfficial ? `<span class="chip">연습문제</span>` : ''}
+        </div>
+      </div>
+    `);
+    container.appendChild(card);
+  });
+}
+function viewBank(){
+  const wrap = document.createElement('div');
+  const f = state.bank;
+
+  const subjChips = [`<span class="chip clickable ${!f.subjectId?'active':''}" data-action="filterSubject" data-subject="">전체</span>`]
+    .concat(SUBJECTS.map(s=>`<span class="chip clickable ${f.subjectId===s.id?'active':''}" data-action="filterSubject" data-subject="${s.id}">${s.name}</span>`))
+    .join('');
+
+  let subtopicChips = '';
+  if(f.subjectId){
+    const subj = subjectOf(f.subjectId);
+    subtopicChips = `<div class="chip-row">` +
+      `<span class="chip clickable ${!f.subtopic?'active':''}" data-action="filterSubtopic" data-subtopic="">소분류 전체</span>` +
+      subj.subtopics.map(t=>`<span class="chip clickable ${f.subtopic===t?'active':''}" data-action="filterSubtopic" data-subtopic="${escapeHtml(t)}">${escapeHtml(t)}</span>`).join('') +
+      `</div>`;
+  }
+
+  const panel = el(`
+    <div class="panel">
+      <h2><span class="tag-dot"></span>문제은행</h2>
+      <input type="text" class="search-input" id="bank-search-input" placeholder="문제 내용, 라벨, 소분류로 검색" value="${escapeHtml(f.q)}">
+      <div class="chip-row">${subjChips}</div>
+      ${subtopicChips}
+      <div class="toggle-row">
+        <span>즐겨찾기만 보기</span>
+        <div class="switch ${f.bookmarkedOnly?'on':''}" data-action="toggleBookmarkFilter"><div class="knob"></div></div>
+      </div>
+    </div>
+  `);
+  wrap.appendChild(panel);
+
+  const resultsWrap = document.createElement('div');
+  resultsWrap.id = 'bank-results';
+  wrap.appendChild(resultsWrap);
+  renderBankResultsInto(resultsWrap);
+
+  setTimeout(()=>{
+    const input = document.getElementById('bank-search-input');
+    if(input){
+      input.addEventListener('input', (e)=>{
+        state.bank.q = e.target.value;
+        renderBankResultsInto(document.getElementById('bank-results'));
+      });
+    }
+  }, 0);
+
+  return wrap;
+}
+
+/* =========================================================
+   VIEW: QUIZ SETUP
+========================================================= */
+function viewQuizSetup(){
+  const wrap = document.createElement('div');
+  const cfg = state.quizCfg;
+
+  const subjChips = SUBJECTS.map(s=>{
+    const active = cfg.subjectIds.includes(s.id);
+    return `<span class="chip clickable ${active?'active':''}" data-action="toggleQuizSubject" data-subject="${s.id}">${s.name}</span>`;
+  }).join('');
+
+  const pool = allProblems().filter(p=>cfg.subjectIds.includes(p.subjectId)).filter(p=>{
+    if(cfg.scope==='bookmark') return userData.bookmarks.includes(p.id);
+    if(cfg.scope==='wrong'){ const a=lastAttempt(p.id); return a && a.correct===false; }
+    return true;
+  });
+
+  wrap.appendChild(el(`
+    <div class="panel">
+      <h2><span class="tag-dot"></span>모의고사 설정</h2>
+      <div class="field">
+        <label>과목 선택 (여러 개 선택 가능)</label>
+        <div class="chip-row">${subjChips}</div>
+      </div>
+      <div class="field">
+        <label>출제 범위</label>
+        <div class="chip-row">
+          <span class="chip clickable ${cfg.scope==='all'?'active':''}" data-action="setQuizScope" data-scope="all">전체</span>
+          <span class="chip clickable ${cfg.scope==='bookmark'?'active':''}" data-action="setQuizScope" data-scope="bookmark">즐겨찾기만</span>
+          <span class="chip clickable ${cfg.scope==='wrong'?'active':''}" data-action="setQuizScope" data-scope="wrong">오답 위주</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>문항 수 (조건에 맞는 문제 ${pool.length}개 중)</label>
+        <input type="number" class="num-input" id="quiz-count-input" min="1" max="${Math.max(pool.length,1)}" value="${Math.min(cfg.count, Math.max(pool.length,1))}">
+      </div>
+      ${pool.length===0 ? `<div class="warn-box">선택한 조건에 맞는 문제가 없습니다. 과목이나 범위를 조정해주세요.</div>` : ''}
+      <button class="btn primary" data-action="startQuiz" ${pool.length===0?'disabled':''}>모의고사 시작하기</button>
+    </div>
+  `));
+
+  setTimeout(()=>{
+    const input = document.getElementById('quiz-count-input');
+    if(input) input.addEventListener('input', (e)=>{ cfg.count = parseInt(e.target.value)||1; });
+  }, 0);
+
+  return wrap;
+}
+
+/* =========================================================
+   VIEW: QUIZ TAKING
+========================================================= */
+function viewQuiz(){
+  const q = state.quiz;
+  const wrap = document.createElement('div');
+  const total = q.ids.length;
+  const p = findProblem(q.ids[q.index]);
+  const subj = subjectOf(p.subjectId);
+  const selected = q.answers[p.id];
+
+  const paletteBtns = q.ids.map((id,i)=>{
+    const cls = i===q.index ? 'current' : (q.answers[id]!==undefined ? 'answered' : '');
+    return `<button data-action="quizJumpTo" data-index="${i}" class="${cls}">${i+1}</button>`;
+  }).join('');
+
+  const choicesHtml = p.choices.map((c,i)=>{
+    const cls = selected===i ? 'selected' : '';
+    return `<button class="choice-btn ${cls}" data-action="selectChoice" data-idx="${i}"><span class="idx">${i+1}</span><span>${escapeHtml(c)}</span></button>`;
+  }).join('');
+
+  wrap.appendChild(el(`
+    <div class="panel">
+      <div class="quiz-progress">
+        <span class="pcount">${q.index+1} / ${total}</span>
+        <span class="chip subject">${subj.name}</span>
+      </div>
+      <div class="chip-row">${p.subtopics.map(t=>`<span class="chip">${escapeHtml(t)}</span>`).join('')}</div>
+      <div class="qtext">${escapeHtml(p.question)}</div>
+      <div>${choicesHtml}</div>
+      <div class="palette">${paletteBtns}</div>
+      <div class="btn-row">
+        <button class="btn ghost" data-action="quizPrev" ${q.index===0?'disabled':''}>이전</button>
+        ${q.index===total-1
+          ? `<button class="btn primary" data-action="quizSubmit">제출하고 결과보기</button>`
+          : `<button class="btn primary" data-action="quizNext">다음</button>`}
+      </div>
+    </div>
+  `));
+  return wrap;
+}
+
+/* =========================================================
+   VIEW: QUIZ RESULT
+========================================================= */
+function viewQuizResult(){
+  const q = state.quiz;
+  const wrap = document.createElement('div');
+  const total = q.results.length;
+  const correctCount = q.results.filter(r=>r.correct).length;
+  const pct = Math.round((correctCount/total)*100);
+
+  wrap.appendChild(el(`
+    <div class="panel">
+      <div class="score-hero">
+        <div class="big">${correctCount} / ${total}</div>
+        <div class="lbl">정답률 ${pct}%</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost" data-action="nav" data-view="home">홈으로</button>
+        ${correctCount<total ? `<button class="btn primary" data-action="retryWrongFromResult">오답만 다시 풀기</button>` : `<button class="btn primary" data-action="nav" data-view="quizSetup">다시 풀기</button>`}
+      </div>
+    </div>
+  `));
+
+  const list = document.createElement('div');
+  q.results.forEach((r,i)=>{
+    const p = findProblem(r.id);
+    const row = document.createElement('div');
+    row.className = 'result-row';
+    row.innerHTML = `
+      <div class="rr-head" data-action="toggleExpandResult" data-id="${r.id}">
+        <span class="rr-icon ${r.correct?'ok':'no'}">${r.correct?'✓':'✕'}</span>
+        <span class="rr-label">${i+1}. ${escapeHtml(p.label)}</span>
+        <span class="rr-chev">${state.expanded[r.id]?'▲':'▼'}</span>
+      </div>
+      ${state.expanded[r.id] ? `<div class="rr-body">${buildSolutionBlock(p, {selectedIdx:r.selected, interactive:false})}</div>` : ''}
+    `;
+    list.appendChild(row);
+  });
+  wrap.appendChild(list);
+  return wrap;
+}
+
+/* =========================================================
+   SHARED SOLUTION HELPERS
+========================================================= */
+function buildChoiceOptionsHtml(p, opts){
+  const selectedIdx = opts.selectedIdx;
+  const revealed = !!opts.revealed;
+  return p.choices.map((c,i)=>{
+    if(!revealed){
+      const cls = selectedIdx===i ? 'selected' : '';
+      return `<button class="choice-btn ${cls}" data-action="studySelectChoice" data-idx="${i}"><span class="idx">${i+1}</span><span>${escapeHtml(c)}</span></button>`;
+    }
+    let cls = '';
+    if(i===p.answer) cls = 'correct';
+    else if(selectedIdx===i && selectedIdx!==p.answer) cls = 'incorrect';
+    return `<div class="choice-btn ${cls}" style="cursor:default;"><span class="idx">${i+1}</span><span>${escapeHtml(c)}</span></div>`;
+  }).join('');
+}
+function buildExplanationHtml(p){
+  let html = '';
+  const ex = p.explanation;
+  if(ex && typeof ex === 'object'){
+    if(ex.concept) html += `<div class="concept">${ex.concept}</div>`;
+    if(ex.steps && ex.steps.length){
+      html += `<div class="section-eyebrow">풀이 과정</div><ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join('')}</ol>`;
+    }
+    if(ex.selfCheck && ex.selfCheck.length){
+      html += `<div class="section-eyebrow">이해도 확인</div>`;
+      html += ex.selfCheck.map(sc=>`<div class="sc-block"><div class="sc-q">Q. ${escapeHtml(sc.q)}</div><div class="sc-a">${escapeHtml(sc.a)}</div></div>`).join('');
+    }
+  } else if(typeof ex === 'string'){
+    html = `<div class="plain-explain">${escapeHtml(ex)}</div>`;
+  }
+  return html;
+}
+function buildRelatedHtml(p){
+  const rel = allProblems().filter(o=>o.id!==p.id && o.subtopics.some(t=>p.subtopics.includes(t))).slice(0,5);
+  if(!rel.length) return '';
+  return `<div class="section-eyebrow">비슷한 소분류의 다른 문제</div>` +
+    rel.map(o=>`<div class="prob-card" data-action="openSolutionFromBank" data-id="${o.id}"><div class="pc-label">${escapeHtml(o.label)}</div><div class="chip-row"><span class="chip subject">${subjectOf(o.subjectId).name}</span>${o.subtopics.map(t=>`<span class="chip">${escapeHtml(t)}</span>`).join('')}</div></div>`).join('');
+}
+
+/* =========================================================
+   SOLUTION BLOCK (compact, always-revealed — used by quiz result expand)
+========================================================= */
+function buildSolutionBlock(p, opts){
+  opts = opts || {};
+  const selectedIdx = opts.selectedIdx;
+  const interactive = !!opts.interactive;
+  const subj = subjectOf(p.subjectId);
+
+  const tagChips = p.subtopics.map(t=>{
+    const tagAttr = interactive ? `data-action="tagClick" data-subtopic="${escapeHtml(t)}" data-subject="${p.subjectId}"` : '';
+    return `<span class="chip ${interactive?'clickable':''}" ${tagAttr}>${escapeHtml(t)}</span>`;
+  }).join('');
+
+  const choicesHtml = buildChoiceOptionsHtml(p, { selectedIdx, revealed:true });
+  const explainHtml = buildExplanationHtml(p);
+
+  const bmOn = userData.bookmarks.includes(p.id);
+  const bookmarkBtn = interactive ? `<button class="bm-star ${bmOn?'on':''}" data-action="toggleBookmark" data-id="${p.id}">★</button>` : '';
+  const related = interactive ? buildRelatedHtml(p) : '';
+
+  return `
+    <div class="sol-block">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+        <div class="sol-label">${escapeHtml(p.label)}</div>
+        ${bookmarkBtn}
+      </div>
+      <div class="chip-row"><span class="chip subject">${subj.name}</span>${tagChips}${!p.isOfficial?'<span class="chip">연습문제</span>':''}</div>
+      <div class="qtext" style="margin-top:12px;">${escapeHtml(p.question)}</div>
+      <div>${choicesHtml}</div>
+      ${explainHtml}
+      ${p.sourceNote ? `<div class="source-note">${escapeHtml(p.sourceNote)}</div>` : ''}
+      ${related}
+    </div>
+  `;
+}
+
+/* =========================================================
+   VIEW: SOLUTION (bank study view — question left, solution right)
+========================================================= */
+function viewSolution(){
+  const wrap = document.createElement('div');
+  const p = findProblem(state.solution.id);
+  if(!p){
+    wrap.appendChild(el(`<div class="empty">문제를 찾을 수 없습니다.</div>`));
+    return wrap;
+  }
+  const back = el(`<button class="back-link" data-action="backFromSolution">← 목록으로</button>`);
+  wrap.appendChild(back);
+
+  const subj = subjectOf(p.subjectId);
+  const selectedIdx = state.solution.selectedIdx;
+  const revealed = !!state.solution.revealed;
+
+  const tagChips = p.subtopics.map(t=>
+    `<span class="chip clickable" data-action="tagClick" data-subtopic="${escapeHtml(t)}" data-subject="${p.subjectId}">${escapeHtml(t)}</span>`
+  ).join('');
+  const bmOn = userData.bookmarks.includes(p.id);
+  const choicesHtml = buildChoiceOptionsHtml(p, { selectedIdx, revealed });
+
+  const rightHtml = revealed
+    ? `
+      <div class="section-eyebrow">해설</div>
+      ${buildExplanationHtml(p)}
+      ${p.sourceNote ? `<div class="source-note">${escapeHtml(p.sourceNote)}</div>` : ''}
+    `
+    : `
+      <div class="section-eyebrow">해설</div>
+      <div class="empty">
+        왼쪽에서 보기를 선택하면 정답과 해설이 여기에 표시됩니다.<br>
+        <button class="btn ghost" data-action="studyReveal" style="width:auto;display:inline-flex;margin-top:14px;padding:9px 16px;">정답 바로 보기</button>
+      </div>
+    `;
+
+  const panel = document.createElement('div');
+  panel.className = 'panel';
+  panel.innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+      <div class="sol-label">${escapeHtml(p.label)}</div>
+      <button class="bm-star ${bmOn?'on':''}" data-action="toggleBookmark" data-id="${p.id}">★</button>
+    </div>
+    <div class="chip-row"><span class="chip subject">${subj.name}</span>${tagChips}${!p.isOfficial?'<span class="chip">연습문제</span>':''}</div>
+    <div class="solution-layout">
+      <div class="sol-left">
+        <div class="qtext">${escapeHtml(p.question)}</div>
+        <div>${choicesHtml}</div>
+      </div>
+      <div class="sol-right">${rightHtml}</div>
+    </div>
+  `;
+  wrap.appendChild(panel);
+
+  const related = buildRelatedHtml(p);
+  if(related){
+    const relPanel = document.createElement('div');
+    relPanel.className = 'panel';
+    relPanel.innerHTML = related;
+    wrap.appendChild(relPanel);
+  }
+
+  return wrap;
+}
+
+/* =========================================================
+   VIEW: ADD PROBLEM FORM
+========================================================= */
+function subtopicCheckboxesHtml(subjectId){
+  const subj = subjectOf(subjectId) || SUBJECTS[0];
+  return subj.subtopics.map((t,i)=>`
+    <label class="subtopic-check">
+      <input type="checkbox" name="subtopic" value="${escapeHtml(t)}"> ${escapeHtml(t)}
+    </label>
+  `).join('');
+}
+function viewAdd(){
+  const wrap = document.createElement('div');
+
+  if(state.addMsg){
+    wrap.appendChild(el(`<div class="toast">${escapeHtml(state.addMsg)}</div>`));
+  }
+
+  const subjOptions = SUBJECTS.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+
+  const panel = el(`
+    <div class="panel">
+      <h2><span class="tag-dot"></span>새 문제 등록</h2>
+      <form id="add-form">
+        <div class="field">
+          <label>라벨 (예: 2025년 1회 전기기기 4번, 또는 연습문제 제목)</label>
+          <input type="text" class="form-input" id="f-label" placeholder="예: 2025년 1회 전력공학 13번">
+        </div>
+        <div class="field">
+          <label>과목</label>
+          <select class="form-select" id="f-subject">${subjOptions}</select>
+        </div>
+        <div class="field">
+          <label>소분류 (해당하는 항목 선택, 필요시 직접 입력에 추가)</label>
+          <div id="f-subtopics">${subtopicCheckboxesHtml(SUBJECTS[0].id)}</div>
+          <input type="text" class="form-input" id="f-subtopic-custom" placeholder="직접 입력 (쉼표로 구분)" style="margin-top:8px;">
+        </div>
+        <div class="field">
+          <label>문제 지문</label>
+          <textarea class="form-input" id="f-question" required placeholder="문제 내용을 입력하세요"></textarea>
+        </div>
+        <div class="field">
+          <label>보기 4개 (정답 앞 라디오 버튼 선택)</label>
+          <div class="choice-row"><input type="radio" name="f-answer" value="0" required><input type="text" class="form-input" id="f-choice-0" placeholder="① 보기 1"></div>
+          <div class="choice-row"><input type="radio" name="f-answer" value="1"><input type="text" class="form-input" id="f-choice-1" placeholder="② 보기 2"></div>
+          <div class="choice-row"><input type="radio" name="f-answer" value="2"><input type="text" class="form-input" id="f-choice-2" placeholder="③ 보기 3"></div>
+          <div class="choice-row"><input type="radio" name="f-answer" value="3"><input type="text" class="form-input" id="f-choice-3" placeholder="④ 보기 4"></div>
+        </div>
+        <div class="field">
+          <label>해설 (꼬리질문으로 확인했던 내용까지 정리해서 적어주세요)</label>
+          <textarea class="form-input" id="f-explanation" style="min-height:120px;" placeholder="핵심 개념, 풀이 과정, 이해도 확인 질문/답 등을 자유롭게 정리해서 입력하세요"></textarea>
+        </div>
+        <div class="field">
+          <label>출처 / 메모 (선택)</label>
+          <input type="text" class="form-input" id="f-source" placeholder="예: 2026-08-26 대화에서 정리, 복원문제 여부 등">
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn ghost" data-action="resetAddForm">초기화</button>
+          <button type="submit" class="btn primary">저장하기</button>
+        </div>
+      </form>
+    </div>
+  `);
+  wrap.appendChild(panel);
+
+  setTimeout(()=>{
+    const subjSel = document.getElementById('f-subject');
+    if(subjSel){
+      subjSel.addEventListener('change', (e)=>{
+        document.getElementById('f-subtopics').innerHTML = subtopicCheckboxesHtml(e.target.value);
+      });
+    }
+    const form = document.getElementById('add-form');
+    if(form){
+      form.addEventListener('submit', onAddFormSubmit);
+    }
+  }, 0);
+
+  return wrap;
+}
+
+async function onAddFormSubmit(e){
+  e.preventDefault();
+  const label = document.getElementById('f-label').value.trim() || '사용자 등록 문제';
+  const subjectId = document.getElementById('f-subject').value;
+  const question = document.getElementById('f-question').value.trim();
+  const choices = [0,1,2,3].map(i=>document.getElementById('f-choice-'+i).value.trim());
+  const answerEl = document.querySelector('input[name="f-answer"]:checked');
+  const explanation = document.getElementById('f-explanation').value.trim();
+  const source = document.getElementById('f-source').value.trim();
+
+  if(!question || choices.some(c=>!c) || !answerEl){
+    alert('문제 지문, 보기 4개, 정답을 모두 입력해주세요.');
+    return;
+  }
+  const checkedTags = Array.from(document.querySelectorAll('input[name="subtopic"]:checked')).map(i=>i.value);
+  const customTags = document.getElementById('f-subtopic-custom').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const subtopics = Array.from(new Set(checkedTags.concat(customTags)));
+
+  const problem = {
+    id:'u-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),
+    label, subjectId,
+    subtopics: subtopics.length ? subtopics : ['미분류'],
+    isOfficial:false,
+    question, choices,
+    answer: parseInt(answerEl.value),
+    explanation: explanation || '해설이 아직 입력되지 않았습니다.',
+    sourceNote: source || ''
+  };
+  userData.customProblems.push(problem);
+  await saveUserData();
+  state.addMsg = `"${label}" 문제가 저장되었습니다. 문제은행에서 바로 확인할 수 있습니다.`;
+  render();
+}
+
+/* =========================================================
+   EVENT DELEGATION
+========================================================= */
+function startQuizFromPool(pool){
+  if(!pool.length) return;
+  state.quiz = { ids: shuffle(pool).map(p=>p.id), index:0, answers:{}, submitted:false };
+  navigate('quiz');
+}
+
+async function onDocClick(e){
+  const target = e.target.closest('[data-action]');
+  if(!target) return;
+  const action = target.dataset.action;
+
+  switch(action){
+    case 'nav': {
+      navigate(target.dataset.view);
+      break;
+    }
+    case 'goSubject': {
+      state.bank = { subjectId: target.dataset.subject, subtopic:null, q:'', bookmarkedOnly:false };
+      navigate('bank');
+      break;
+    }
+    case 'quickBookmarks': {
+      startQuizFromPool(allProblems().filter(p=>userData.bookmarks.includes(p.id)));
+      break;
+    }
+    case 'quickWrong': {
+      startQuizFromPool(allProblems().filter(p=>{ const a=lastAttempt(p.id); return a && a.correct===false; }));
+      break;
+    }
+    case 'filterSubject': {
+      state.bank.subjectId = target.dataset.subject || null;
+      state.bank.subtopic = null;
+      render();
+      break;
+    }
+    case 'filterSubtopic': {
+      state.bank.subtopic = target.dataset.subtopic || null;
+      render();
+      break;
+    }
+    case 'toggleBookmarkFilter': {
+      state.bank.bookmarkedOnly = !state.bank.bookmarkedOnly;
+      render();
+      break;
+    }
+    case 'toggleBookmark': {
+      const id = target.dataset.id;
+      const idx = userData.bookmarks.indexOf(id);
+      if(idx === -1) userData.bookmarks.push(id); else userData.bookmarks.splice(idx,1);
+      await saveUserData();
+      render();
+      break;
+    }
+    case 'openSolutionFromBank': {
+      state.solution = { id: target.dataset.id, returnView:'bank', selectedIdx:undefined, revealed:false };
+      navigate('solution');
+      break;
+    }
+    case 'studySelectChoice': {
+      state.solution.selectedIdx = parseInt(target.dataset.idx);
+      state.solution.revealed = true;
+      render();
+      break;
+    }
+    case 'studyReveal': {
+      state.solution.revealed = true;
+      render();
+      break;
+    }
+    case 'backFromSolution': {
+      navigate(state.solution.returnView || 'bank');
+      break;
+    }
+    case 'tagClick': {
+      state.bank = { subjectId: target.dataset.subject || null, subtopic: target.dataset.subtopic || null, q:'', bookmarkedOnly:false };
+      navigate('bank');
+      break;
+    }
+    case 'toggleQuizSubject': {
+      const sid = target.dataset.subject;
+      const list = state.quizCfg.subjectIds;
+      const idx = list.indexOf(sid);
+      if(idx === -1) list.push(sid); else list.splice(idx,1);
+      render();
+      break;
+    }
+    case 'setQuizScope': {
+      state.quizCfg.scope = target.dataset.scope;
+      render();
+      break;
+    }
+    case 'startQuiz': {
+      const cfg = state.quizCfg;
+      let pool = allProblems().filter(p=>cfg.subjectIds.includes(p.subjectId)).filter(p=>{
+        if(cfg.scope==='bookmark') return userData.bookmarks.includes(p.id);
+        if(cfg.scope==='wrong'){ const a=lastAttempt(p.id); return a && a.correct===false; }
+        return true;
+      });
+      const countInput = document.getElementById('quiz-count-input');
+      const count = countInput ? (parseInt(countInput.value)||1) : cfg.count;
+      pool = shuffle(pool).slice(0, Math.max(1, Math.min(count, pool.length)));
+      startQuizFromPool(pool);
+      break;
+    }
+    case 'selectChoice': {
+      const q = state.quiz;
+      const p = findProblem(q.ids[q.index]);
+      q.answers[p.id] = parseInt(target.dataset.idx);
+      render();
+      break;
+    }
+    case 'quizNext': {
+      state.quiz.index = Math.min(state.quiz.index+1, state.quiz.ids.length-1);
+      render();
+      break;
+    }
+    case 'quizPrev': {
+      state.quiz.index = Math.max(state.quiz.index-1, 0);
+      render();
+      break;
+    }
+    case 'quizJumpTo': {
+      state.quiz.index = parseInt(target.dataset.index);
+      render();
+      break;
+    }
+    case 'quizSubmit': {
+      const q = state.quiz;
+      const unanswered = q.ids.filter(id=>q.answers[id]===undefined).length;
+      if(unanswered > 0){
+        const ok = confirm(`아직 풀지 않은 문제가 ${unanswered}개 있습니다. 그래도 제출할까요?`);
+        if(!ok) break;
+      }
+      const results = q.ids.map(id=>{
+        const p = findProblem(id);
+        const selected = q.answers[id];
+        const correct = selected === p.answer;
+        if(!userData.attempts[id]) userData.attempts[id] = [];
+        userData.attempts[id].push({ date:new Date().toISOString(), correct });
+        if(userData.attempts[id].length > 20) userData.attempts[id] = userData.attempts[id].slice(-20);
+        return { id, selected, correct };
+      });
+      await saveUserData();
+      q.results = results;
+      q.submitted = true;
+      state.expanded = {};
+      navigate('quizResult');
+      break;
+    }
+    case 'toggleExpandResult': {
+      const id = target.dataset.id;
+      state.expanded[id] = !state.expanded[id];
+      render();
+      break;
+    }
+    case 'retryWrongFromResult': {
+      const wrongIds = state.quiz.results.filter(r=>!r.correct).map(r=>r.id);
+      startQuizFromPool(allProblems().filter(p=>wrongIds.includes(p.id)));
+      break;
+    }
+    case 'resetAddForm': {
+      state.addMsg = null;
+      render();
+      break;
+    }
+    default: break;
+  }
+}
+
+document.body.addEventListener('click', onDocClick);
+
+/* =========================================================
+   PROBLEM DATA LOADER
+   manifest.js가 이미 PROBLEM_FILES와 SEED_PROBLEMS를 선언했습니다.
+   problems/ 안의 각 파일은 SEED_PROBLEMS.push({...})만 하는 작은 스크립트입니다.
+   file:// 환경에서는 작은 로컬 파일을 여러 개 불러와도 네트워크 지연이 없어 거의 즉시 로드되므로,
+   문제 수가 늘어나도 속도가 느려지지 않습니다. 새 문제를 추가할 때도 이 파일을 건드릴 필요 없이
+   작은 새 파일 하나 + manifest.js 한 줄만 추가하면 됩니다.
+========================================================= */
+function loadProblemScripts(){
+  return new Promise((resolve)=>{
+    const files = (typeof PROBLEM_FILES !== 'undefined') ? PROBLEM_FILES : [];
+    let remaining = files.length;
+    if(remaining === 0){ resolve(); return; }
+    files.forEach(fname=>{
+      const s = document.createElement('script');
+      s.src = 'problems/' + fname;
+      const done = ()=>{ remaining--; if(remaining === 0) resolve(); };
+      s.onload = done;
+      s.onerror = done;
+      document.head.appendChild(s);
+    });
+  });
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+(async function init(){
+  await loadProblemScripts();
+  userData = await loadUserData();
+  render();
+})();
+</script>
+</body>
+</html>
