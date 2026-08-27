@@ -13,5 +13,9 @@ const PROBLEM_FILES = [
   "me-2025-1-4.js",
   "pw-2025-1-13.js",
   "me-2025-1-3.js",
+  "me-2025-1-6.js",
+  "me-2025-1-12.js",
+  "me-2025-1-13.js",
+  "me-2025-1-18.js",
 ];
 let SEED_PROBLEMS = [];
