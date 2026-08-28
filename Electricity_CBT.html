@@ -122,9 +122,9 @@
   }
 
   /* ---- action cards (home) ---- */
-  .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+  .action-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px;}
   .action-card{
-    grid-column:span 2;
+    grid-column:span 3;
     border:1px solid var(--rule);background:var(--card);
     border-radius:var(--radius);padding:22px;text-align:left;cursor:pointer;color:var(--ink);
     display:flex;align-items:center;justify-content:space-between;gap:14px;
@@ -133,7 +133,7 @@
   }
   .action-card:hover{border-color:var(--ink);background:#fff;}
   .action-card:active{transform:translateY(1px);}
-  .action-card.primary{grid-column:span 2;background:linear-gradient(135deg, var(--card), #fff);}
+  .action-card.primary{grid-column:span 3;background:linear-gradient(135deg, var(--card), #fff);}
   .action-card .ac-code{font-family:var(--mono);font-size:11.5px;color:var(--blue);letter-spacing:.1em;}
   .action-card .ac-title{font-size:17px;font-weight:600;margin-top:6px;}
   .action-card .ac-desc{font-size:13.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5;}
@@ -175,6 +175,24 @@
   .prob-card .pc-label{font-size:14.5px;font-weight:600;color:var(--ink);margin-bottom:6px;}
   .prob-card .pc-q{font-size:13.5px;color:var(--ink-soft);line-height:1.55;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:9px;}
+
+  /* ---- formulas ---- */
+  .formula-card{
+    border:1px solid var(--rule);background:#fff;border-radius:var(--radius);
+    padding:16px 18px;margin-bottom:10px;cursor:pointer;
+  }
+  .formula-card:hover{border-color:var(--blue);}
+  .formula-card .fc-name{font-size:14.5px;font-weight:600;color:var(--ink);margin-bottom:8px;}
+  .formula-eq{
+    font-family:var(--mono);font-size:19px;color:var(--ink);text-align:center;
+    background:var(--paper);border:1px solid var(--rule-soft);border-radius:2px;
+    padding:16px 14px;margin:10px 0;letter-spacing:.01em;
+  }
+  .formula-eq.lg{font-size:23px;padding:22px 16px;}
+  .var-row{display:flex;gap:10px;padding:7px 0;border-bottom:1px dotted var(--rule-soft);font-size:13.5px;}
+  .var-row:last-child{border-bottom:none;}
+  .var-row .sym{font-family:var(--mono);color:var(--blue);font-weight:600;width:56px;flex:none;}
+  .var-row .desc{color:var(--ink-soft);}
   .bm-star{background:none;border:none;color:var(--rule);font-size:18px;cursor:pointer;padding:2px 4px;flex:none;}
   .bm-star.on{color:var(--gold);}
   .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 2px;font-size:14px;color:var(--ink-soft);}
@@ -306,6 +324,7 @@
         <button class="tab" data-action="nav" data-view="home"><span class="ic">⌂</span>홈</button>
         <button class="tab" data-action="nav" data-view="bank"><span class="ic">▤</span>문제은행</button>
         <button class="tab" data-action="nav" data-view="quizSetup"><span class="ic">▷</span>모의고사</button>
+        <button class="tab" data-action="nav" data-view="formulas"><span class="ic">∑</span>공식</button>
         <button class="tab" data-action="nav" data-view="add"><span class="ic">＋</span>등록</button>
       </nav>
     </div>
@@ -356,22 +375,25 @@ async function loadUserData(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) return JSON.parse(raw);
   }catch(e){ /* no data yet */ }
-  return { customProblems:[], attempts:{}, bookmarks:[] };
+  return { customProblems:[], attempts:{}, bookmarks:[], customFormulas:[] };
 }
 async function saveUserData(){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(userData)); }
   catch(e){ console.error('저장 실패', e); }
 }
 
-let userData = { customProblems:[], attempts:{}, bookmarks:[] };
+let userData = { customProblems:[], attempts:{}, bookmarks:[], customFormulas:[] };
 let state = {
   view:'home',
   bank:{ subjectId:null, subtopic:null, q:'', bookmarkedOnly:false },
   quizCfg:{ subjectIds: SUBJECTS.map(s=>s.id), scope:'all', count:10 },
   quiz:null,
   solution:{ id:null, returnView:'bank', selectedIdx:undefined, revealed:false },
+  formula:{ subjectId:null, subtopic:null, q:'' },
+  formulaView:{ id:null, returnView:'formulas' },
   expanded:{},
-  addMsg:null
+  addMsg:null,
+  formulaAddMsg:null
 };
 
 /* =========================================================
@@ -379,6 +401,8 @@ let state = {
 ========================================================= */
 function allProblems(){ return SEED_PROBLEMS.concat(userData.customProblems); }
 function findProblem(id){ return allProblems().find(p=>p.id===id); }
+function allFormulas(){ return (typeof SEED_FORMULAS!=='undefined'?SEED_FORMULAS:[]).concat(userData.customFormulas||[]); }
+function findFormula(id){ return allFormulas().find(f=>f.id===id); }
 function shuffle(arr){
   const a = arr.slice();
   for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
@@ -421,7 +445,7 @@ function updateHeaderStats(){
   document.getElementById('stat-accuracy').textContent = acc==null ? '–' : acc+'%';
 }
 function updateTabbar(){
-  const map = { home:'home', bank:'bank', solution:'bank', quizSetup:'quizSetup', quiz:'quizSetup', quizResult:'quizSetup', add:'add' };
+  const map = { home:'home', bank:'bank', solution:'bank', quizSetup:'quizSetup', quiz:'quizSetup', quizResult:'quizSetup', add:'add', formulas:'formulas', formulaDetail:'formulas', formulaAdd:'formulas' };
   const active = map[state.view] || 'home';
   document.querySelectorAll('#tabbar .tab').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.view === active);
@@ -442,6 +466,9 @@ function render(){
   else if(state.view==='quizResult') node = viewQuizResult();
   else if(state.view==='solution') node = viewSolution();
   else if(state.view==='add') node = viewAdd();
+  else if(state.view==='formulas') node = viewFormulas();
+  else if(state.view==='formulaDetail') node = viewFormulaDetail();
+  else if(state.view==='formulaAdd') node = viewFormulaAdd();
   else node = viewHome();
   root.appendChild(node);
   updateHeaderStats();
@@ -481,6 +508,12 @@ function viewHome(){
         <div>
           <div class="ac-code">BANK</div>
           <div class="ac-title">문제은행 둘러보기</div>
+        </div>
+      </button>
+      <button class="action-card half" data-action="nav" data-view="formulas">
+        <div>
+          <div class="ac-code">FORMULA</div>
+          <div class="ac-title">공식 모음 보기</div>
         </div>
       </button>
       <button class="action-card half" data-action="nav" data-view="add">
@@ -857,6 +890,7 @@ function viewSolution(){
       <div class="section-eyebrow">해설</div>
       ${buildExplanationHtml(p)}
       ${p.sourceNote ? `<div class="source-note">${escapeHtml(p.sourceNote)}</div>` : ''}
+      ${buildRelatedFormulasHtml(p)}
     `
     : `
       <div class="section-eyebrow">해설</div>
@@ -894,6 +928,7 @@ function viewSolution(){
 
   return wrap;
 }
+
 
 /* =========================================================
    VIEW: ADD PROBLEM FORM
@@ -1011,6 +1046,256 @@ async function onAddFormSubmit(e){
 }
 
 /* =========================================================
+   FORMULAS: shared helpers
+========================================================= */
+function buildRelatedFormulasHtml(p){
+  const rel = allFormulas().filter(f=>f.subtopics.some(t=>p.subtopics.includes(t))).slice(0,5);
+  if(!rel.length) return '';
+  return `<div class="section-eyebrow">관련 공식</div>` +
+    rel.map(f=>`<div class="formula-card" data-action="openFormula" data-id="${f.id}"><div class="fc-name">${escapeHtml(f.name)}</div><div class="formula-eq">${escapeHtml(f.formula)}</div></div>`).join('');
+}
+function buildRelatedProblemsFromFormula(f){
+  const rel = allProblems().filter(p=>p.subtopics.some(t=>f.subtopics.includes(t))).slice(0,5);
+  if(!rel.length) return '';
+  return `<div class="section-eyebrow">관련 문제</div>` +
+    rel.map(p=>`<div class="prob-card" data-action="openSolutionFromBank" data-id="${p.id}"><div class="pc-label">${escapeHtml(p.label)}</div><div class="chip-row"><span class="chip subject">${subjectOf(p.subjectId).name}</span>${p.subtopics.map(t=>`<span class="chip">${escapeHtml(t)}</span>`).join('')}</div></div>`).join('');
+}
+
+/* =========================================================
+   VIEW: FORMULAS (list + filter)
+========================================================= */
+function getFilteredFormulas(){
+  const f = state.formula;
+  return allFormulas().filter(x=>{
+    if(f.subjectId && x.subjectId !== f.subjectId) return false;
+    if(f.subtopic && !x.subtopics.includes(f.subtopic)) return false;
+    if(f.q){
+      const hay = (x.name+' '+x.formula+' '+x.subtopics.join(' ')).toLowerCase();
+      if(!hay.includes(f.q.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+function renderFormulaResultsInto(container){
+  const list = getFilteredFormulas();
+  container.innerHTML = '';
+  if(list.length === 0){
+    container.appendChild(el(`<div class="empty">조건에 맞는 공식이 없습니다. 필터를 조정하거나 새 공식을 등록해보세요.</div>`));
+    return;
+  }
+  list.forEach(f=>{
+    const subj = subjectOf(f.subjectId);
+    const card = el(`
+      <div class="formula-card" data-action="openFormula" data-id="${f.id}">
+        <div class="fc-name">${escapeHtml(f.name)}</div>
+        <div class="formula-eq">${escapeHtml(f.formula)}</div>
+        <div class="chip-row">
+          <span class="chip subject">${subj ? subj.name : ''}</span>
+          ${f.subtopics.map(t=>`<span class="chip">${escapeHtml(t)}</span>`).join('')}
+        </div>
+      </div>
+    `);
+    container.appendChild(card);
+  });
+}
+function viewFormulas(){
+  const wrap = document.createElement('div');
+  const f = state.formula;
+
+  const subjChips = [`<span class="chip clickable ${!f.subjectId?'active':''}" data-action="filterFormulaSubject" data-subject="">전체</span>`]
+    .concat(SUBJECTS.map(s=>`<span class="chip clickable ${f.subjectId===s.id?'active':''}" data-action="filterFormulaSubject" data-subject="${s.id}">${s.name}</span>`))
+    .join('');
+
+  let subtopicChips = '';
+  if(f.subjectId){
+    const subj = subjectOf(f.subjectId);
+    subtopicChips = `<div class="chip-row">` +
+      `<span class="chip clickable ${!f.subtopic?'active':''}" data-action="filterFormulaSubtopic" data-subtopic="">소분류 전체</span>` +
+      subj.subtopics.map(t=>`<span class="chip clickable ${f.subtopic===t?'active':''}" data-action="filterFormulaSubtopic" data-subtopic="${escapeHtml(t)}">${escapeHtml(t)}</span>`).join('') +
+      `</div>`;
+  }
+
+  const panel = el(`
+    <div class="panel">
+      <h2><span class="tag-dot"></span>공식 모음 · ${allFormulas().length}개</h2>
+      <input type="text" class="search-input" id="formula-search-input" placeholder="공식 이름, 식, 소분류로 검색" value="${escapeHtml(f.q)}">
+      <div class="chip-row">${subjChips}</div>
+      ${subtopicChips}
+    </div>
+  `);
+  wrap.appendChild(panel);
+
+  wrap.appendChild(el(`<button class="btn primary" data-action="nav" data-view="formulaAdd" style="margin-bottom:16px;">새 공식 등록</button>`));
+
+  const resultsWrap = document.createElement('div');
+  resultsWrap.id = 'formula-results';
+  wrap.appendChild(resultsWrap);
+  renderFormulaResultsInto(resultsWrap);
+
+  setTimeout(()=>{
+    const input = document.getElementById('formula-search-input');
+    if(input){
+      input.addEventListener('input', (e)=>{
+        state.formula.q = e.target.value;
+        renderFormulaResultsInto(document.getElementById('formula-results'));
+      });
+    }
+  }, 0);
+
+  return wrap;
+}
+
+/* =========================================================
+   VIEW: FORMULA DETAIL
+========================================================= */
+function viewFormulaDetail(){
+  const wrap = document.createElement('div');
+  const f = findFormula(state.formulaView.id);
+  if(!f){
+    wrap.appendChild(el(`<div class="empty">공식을 찾을 수 없습니다.</div>`));
+    return wrap;
+  }
+  const back = el(`<button class="back-link" data-action="backFromFormula">← 목록으로</button>`);
+  wrap.appendChild(back);
+
+  const subj = subjectOf(f.subjectId);
+  const tagChips = f.subtopics.map(t=>
+    `<span class="chip clickable" data-action="tagClickFormula" data-subtopic="${escapeHtml(t)}" data-subject="${f.subjectId}">${escapeHtml(t)}</span>`
+  ).join('');
+
+  const varsHtml = (f.variables && f.variables.length)
+    ? f.variables.map(v=>`<div class="var-row">${v.symbol?`<span class="sym">${escapeHtml(v.symbol)}</span>`:''}<span class="desc">${escapeHtml(v.desc)}</span></div>`).join('')
+    : '';
+
+  const panel = document.createElement('div');
+  panel.className = 'panel';
+  panel.innerHTML = `
+    <div class="sol-label">${escapeHtml(f.name)}</div>
+    <div class="chip-row"><span class="chip subject">${subj?subj.name:''}</span>${tagChips}</div>
+    <div class="formula-eq lg">${escapeHtml(f.formula)}</div>
+    ${varsHtml ? `<div class="section-eyebrow">기호 설명</div>${varsHtml}` : ''}
+    ${f.notes ? `<div class="section-eyebrow">설명</div><div class="plain-explain">${escapeHtml(f.notes)}</div>` : ''}
+    ${f.sourceNote ? `<div class="source-note">${escapeHtml(f.sourceNote)}</div>` : ''}
+  `;
+  wrap.appendChild(panel);
+
+  const related = buildRelatedProblemsFromFormula(f);
+  if(related){
+    const relPanel = document.createElement('div');
+    relPanel.className = 'panel';
+    relPanel.innerHTML = related;
+    wrap.appendChild(relPanel);
+  }
+
+  return wrap;
+}
+
+/* =========================================================
+   VIEW: ADD FORMULA FORM
+========================================================= */
+function viewFormulaAdd(){
+  const wrap = document.createElement('div');
+
+  if(state.formulaAddMsg){
+    wrap.appendChild(el(`<div class="toast">${escapeHtml(state.formulaAddMsg)}</div>`));
+  }
+
+  const subjOptions = SUBJECTS.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+
+  const panel = el(`
+    <div class="panel">
+      <h2><span class="tag-dot"></span>새 공식 등록</h2>
+      <form id="add-formula-form">
+        <div class="field">
+          <label>공식 이름</label>
+          <input type="text" class="form-input" id="ff-name" placeholder="예: 슬립 s">
+        </div>
+        <div class="field">
+          <label>과목</label>
+          <select class="form-select" id="ff-subject">${subjOptions}</select>
+        </div>
+        <div class="field">
+          <label>소분류</label>
+          <div id="ff-subtopics">${subtopicCheckboxesHtml(SUBJECTS[0].id)}</div>
+          <input type="text" class="form-input" id="ff-subtopic-custom" placeholder="직접 입력 (쉼표로 구분)" style="margin-top:8px;">
+        </div>
+        <div class="field">
+          <label>공식</label>
+          <input type="text" class="form-input" id="ff-formula" required placeholder="예: s = (Ns - N) / Ns">
+        </div>
+        <div class="field">
+          <label>기호 설명 (한 줄에 하나, "기호 = 설명" 형식)</label>
+          <textarea class="form-input" id="ff-variables" placeholder="Ns = 동기속도 [rpm]&#10;N = 회전자 속도 [rpm]"></textarea>
+        </div>
+        <div class="field">
+          <label>설명 / 유도 과정 (선택)</label>
+          <textarea class="form-input" id="ff-notes" style="min-height:100px;" placeholder="언제 쓰는 공식인지, 어떻게 유도되는지 등을 자유롭게 적어주세요"></textarea>
+        </div>
+        <div class="field">
+          <label>출처 / 메모 (선택)</label>
+          <input type="text" class="form-input" id="ff-source" placeholder="예: 2026-08-26 대화에서 정리">
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn ghost" data-action="resetFormulaForm">초기화</button>
+          <button type="submit" class="btn primary">저장하기</button>
+        </div>
+      </form>
+    </div>
+  `);
+  wrap.appendChild(panel);
+
+  setTimeout(()=>{
+    const subjSel = document.getElementById('ff-subject');
+    if(subjSel){
+      subjSel.addEventListener('change', (e)=>{
+        document.getElementById('ff-subtopics').innerHTML = subtopicCheckboxesHtml(e.target.value);
+      });
+    }
+    const form = document.getElementById('add-formula-form');
+    if(form){
+      form.addEventListener('submit', onAddFormulaSubmit);
+    }
+  }, 0);
+
+  return wrap;
+}
+
+async function onAddFormulaSubmit(e){
+  e.preventDefault();
+  const name = document.getElementById('ff-name').value.trim() || '이름 없는 공식';
+  const subjectId = document.getElementById('ff-subject').value;
+  const formula = document.getElementById('ff-formula').value.trim();
+  const varsRaw = document.getElementById('ff-variables').value;
+  const notes = document.getElementById('ff-notes').value.trim();
+  const source = document.getElementById('ff-source').value.trim();
+
+  if(!formula){
+    alert('공식을 입력해주세요.');
+    return;
+  }
+  const checkedTags = Array.from(document.querySelectorAll('#ff-subtopics input[name="subtopic"]:checked')).map(i=>i.value);
+  const customTags = document.getElementById('ff-subtopic-custom').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const subtopics = Array.from(new Set(checkedTags.concat(customTags)));
+
+  const variables = varsRaw.split('\n').map(line=>line.trim()).filter(Boolean).map(line=>{
+    const idx = line.indexOf('=')>=0 ? line.indexOf('=') : line.indexOf(':');
+    if(idx>0) return { symbol: line.slice(0,idx).trim(), desc: line.slice(idx+1).trim() };
+    return { symbol:'', desc: line };
+  });
+
+  if(!userData.customFormulas) userData.customFormulas = [];
+  userData.customFormulas.push({
+    id:'uf-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),
+    name, subjectId,
+    subtopics: subtopics.length ? subtopics : ['미분류'],
+    formula, variables, notes, sourceNote: source || ''
+  });
+  await saveUserData();
+  state.formulaAddMsg = `"${name}" 공식이 저장되었습니다.`;
+  render();
+}
+
+/* =========================================================
    EVENT DELEGATION
 ========================================================= */
 function startQuizFromPool(pool){
@@ -1089,6 +1374,36 @@ async function onDocClick(e){
     case 'tagClick': {
       state.bank = { subjectId: target.dataset.subject || null, subtopic: target.dataset.subtopic || null, q:'', bookmarkedOnly:false };
       navigate('bank');
+      break;
+    }
+    case 'openFormula': {
+      state.formulaView = { id: target.dataset.id, returnView: state.view };
+      navigate('formulaDetail');
+      break;
+    }
+    case 'backFromFormula': {
+      navigate(state.formulaView.returnView || 'formulas');
+      break;
+    }
+    case 'tagClickFormula': {
+      state.formula = { subjectId: target.dataset.subject || null, subtopic: target.dataset.subtopic || null, q:'' };
+      navigate('formulas');
+      break;
+    }
+    case 'filterFormulaSubject': {
+      state.formula.subjectId = target.dataset.subject || null;
+      state.formula.subtopic = null;
+      render();
+      break;
+    }
+    case 'filterFormulaSubtopic': {
+      state.formula.subtopic = target.dataset.subtopic || null;
+      render();
+      break;
+    }
+    case 'resetFormulaForm': {
+      state.formulaAddMsg = null;
+      render();
       break;
     }
     case 'toggleQuizSubject': {
@@ -1185,24 +1500,26 @@ async function onDocClick(e){
 document.body.addEventListener('click', onDocClick);
 
 /* =========================================================
-   PROBLEM DATA LOADER
-   manifest.js가 이미 PROBLEM_FILES와 SEED_PROBLEMS를 선언했습니다.
-   problems/ 안의 각 파일은 SEED_PROBLEMS.push({...})만 하는 작은 스크립트입니다.
-   file:// 환경에서는 작은 로컬 파일을 여러 개 불러와도 네트워크 지연이 없어 거의 즉시 로드되므로,
-   문제 수가 늘어나도 속도가 느려지지 않습니다. 새 문제를 추가할 때도 이 파일을 건드릴 필요 없이
-   작은 새 파일 하나 + manifest.js 한 줄만 추가하면 됩니다.
+   PROBLEM & FORMULA DATA LOADER
+   manifest.js already declared PROBLEM_FILES/SEED_PROBLEMS and
+   FORMULA_FILES/SEED_FORMULAS. Each file in problems/ or formulas/ is a tiny
+   script that does SEED_PROBLEMS.push({...}) or SEED_FORMULAS.push({...}).
+   Loading many small local files is effectively free under file:// (no network
+   round-trip), so this stays fast no matter how large the banks grow — and
+   adding a new problem or formula later never requires touching this file or
+   re-reading existing data, only writing one small new file + one line in
+   manifest.js.
 ========================================================= */
-function loadProblemScripts(){
+function loadScripts(files, folder){
   return new Promise((resolve)=>{
-    const files = (typeof PROBLEM_FILES !== 'undefined') ? PROBLEM_FILES : [];
     let remaining = files.length;
     if(remaining === 0){ resolve(); return; }
     files.forEach(fname=>{
       const s = document.createElement('script');
-      s.src = 'problems/' + fname;
+      s.src = folder + '/' + fname;
       const done = ()=>{ remaining--; if(remaining === 0) resolve(); };
       s.onload = done;
-      s.onerror = done;
+      s.onerror = done; // don't let one bad file block the whole app
       document.head.appendChild(s);
     });
   });
@@ -1212,8 +1529,14 @@ function loadProblemScripts(){
    INIT
 ========================================================= */
 (async function init(){
-  await loadProblemScripts();
+  const problemFiles = (typeof PROBLEM_FILES !== 'undefined') ? PROBLEM_FILES : [];
+  const formulaFiles = (typeof FORMULA_FILES !== 'undefined') ? FORMULA_FILES : [];
+  await Promise.all([
+    loadScripts(problemFiles, 'problems'),
+    loadScripts(formulaFiles, 'formulas')
+  ]);
   userData = await loadUserData();
+  if(!userData.customFormulas) userData.customFormulas = [];
   render();
 })();
 </script>

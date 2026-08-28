@@ -1,0 +1,678 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전기기사 Study Planner</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Gaegu:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --paper:#FCFBF4;
+  --card:#FFFFFF;
+  --edge:#E7E4D6;
+  --blue:#6B85C6;
+  --blue-d:#43548A;
+  --blue-l:#DDE4F6;
+  --blue-xl:#EFF3FC;
+  --peach:#FBEDE1;
+  --gold:#EFBF52;
+  --mint:#8FBFA1;
+  --rose:#D98A88;
+  --ink:#3B4054;
+  --dim:#8A8FA3;
+  --dimmer:#B0B4C2;
+  --dot:#CFD5E6;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --hand:"Gaegu","Pretendard",sans-serif;
+  --sans:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  background-image:radial-gradient(circle at 1px 1px, #EDEBDF 1px, transparent 0);
+  background-size:22px 22px;
+  color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;
+  padding:26px 22px 60px;
+}
+.sheet{max-width:1240px;margin:0 auto}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ── 데코 ── */
+.tape{
+  position:absolute;width:84px;height:24px;opacity:.9;
+  background:repeating-linear-gradient(48deg,#C6D3EE 0 5px,#E6ECF9 5px 11px);
+  border-left:1px dashed rgba(255,255,255,.7);border-right:1px dashed rgba(255,255,255,.7);
+}
+.doodle{position:absolute;color:var(--blue);opacity:.5;font-size:15px;pointer-events:none}
+
+/* ── 헤더 ── */
+header{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:22px;flex-wrap:wrap}
+.htitle{position:relative}
+h1{font-family:"Caveat",cursive;font-size:66px;line-height:.95;font-weight:700;color:var(--blue);margin:0;letter-spacing:.01em}
+.sub{font-family:var(--hand);font-size:20px;color:var(--blue-d);margin-top:2px}
+.quote{
+  display:inline-block;margin-top:12px;background:var(--peach);border-radius:999px;
+  padding:7px 20px;font-family:var(--hand);font-size:16px;color:#8A6A4E;
+}
+.datebox{
+  border:2px dashed var(--dot);border-radius:14px;padding:14px 20px;background:#fff;min-width:290px
+}
+.dl{font-family:var(--hand);font-size:17px;color:var(--blue-d)}
+.dl b{font-family:var(--mono);font-size:15px;color:var(--ink);font-weight:600;letter-spacing:-.01em}
+.wdrow{display:flex;gap:10px;margin-top:10px}
+.wd{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;color:var(--dim)}
+.wd i{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--dot);display:block}
+.wd.on i{background:var(--blue);border-color:var(--blue)}
+.wd.on{color:var(--blue-d);font-weight:600}
+.ddayline{margin-top:12px;padding-top:10px;border-top:1px dashed var(--dot);font-size:12.5px;color:var(--dim)}
+.ddayline b{color:var(--rose);font-family:var(--mono);font-weight:600}
+
+/* ── 카드 ── */
+.card{background:var(--card);border:1.5px solid var(--edge);border-radius:16px;padding:16px 16px 18px;position:relative}
+.lbl{
+  display:inline-block;background:var(--blue-l);color:var(--blue-d);border-radius:999px;
+  padding:5px 15px;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+}
+.lbl.peach{background:var(--peach);color:#8A6A4E}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.cnote{font-family:var(--mono);font-size:11px;color:var(--dimmer)}
+
+.grid{display:grid;grid-template-columns:250px minmax(0,1fr) 300px;gap:16px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:16px}
+@media(max-width:1050px){.grid{grid-template-columns:1fr}}
+
+/* ── 시간표 ── */
+.sch{position:relative;margin-top:2px}
+.hr{display:flex;align-items:flex-start;height:32px;border-top:1px solid #F0EFE6}
+.hr:first-child{border-top:none}
+.hr span{font-family:var(--mono);font-size:10.5px;color:var(--dimmer);width:46px;flex:0 0 auto;padding-top:1px}
+.hr u{flex:1 1 auto;height:1px;background:transparent}
+.schlane{position:absolute;left:52px;right:2px;top:0;bottom:0;pointer-events:none}
+.sblk{
+  position:absolute;left:0;right:0;border-radius:7px;padding:4px 8px;overflow:hidden;
+  background:var(--blue-xl);border:1.5px solid #CBD7F0;
+}
+.sblk b{display:block;font-size:11.5px;font-weight:700;color:var(--blue-d);line-height:1.25}
+.sblk i{display:block;font-family:var(--mono);font-size:9.5px;color:var(--dim);font-style:normal}
+.sblk.now{background:#FFF3E4;border-color:#EBC79B}
+.sblk.fin{background:#EEF7F1;border-color:#B9DCC6}
+
+/* ── 오늘의 목표 (블록) ── */
+.blks{display:flex;flex-direction:column;gap:10px}
+.blk{border:1.5px solid var(--edge);border-radius:13px;padding:12px 13px;background:#fff;transition:.16s}
+.blk.run{border-color:#E3B7B6;background:#FEF7F6}
+.blk.fin{border-color:#BFDECB;background:#F6FBF7}
+.b1{display:flex;align-items:center;gap:9px}
+.dotmark{width:10px;height:10px;border-radius:50%;background:var(--dot);flex:0 0 auto}
+.blk.run .dotmark{background:var(--rose);animation:pu 1.4s ease-in-out infinite}
+.blk.fin .dotmark{background:var(--mint)}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.35}}
+.bcode{font-family:var(--mono);font-size:11px;color:var(--dimmer);font-weight:600}
+.bname{font-weight:700;font-size:15px;flex:1 1 auto;letter-spacing:-.01em}
+.btime{font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+.bunit{margin-top:9px;padding:9px 11px;border-radius:9px;background:var(--blue-xl);border:1px solid #DFE6F5}
+.blk.fin .bunit{background:#F0F8F3;border-color:#CFE6D8}
+.bu-n{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;color:var(--dim)}
+.bu-t{font-size:14px;font-weight:700;margin-top:2px;letter-spacing:-.01em}
+.bu-d{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.4}
+.b2{display:flex;align-items:center;gap:10px;margin-top:10px}
+.pbar{flex:1 1 auto;height:7px;border-radius:99px;background:#EFEEE5;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .3s}
+.blk.run .pbar i{background:var(--rose)}
+.blk.fin .pbar i{background:var(--mint)}
+.pnum{font-family:var(--mono);font-size:11.5px;min-width:78px;text-align:right;color:var(--ink)}
+.b3{display:flex;gap:7px;margin-top:10px}
+
+button{font-family:var(--sans);cursor:pointer;border-radius:9px;border:1.5px solid var(--dot);
+  background:#fff;color:var(--ink);font-size:12.5px;font-weight:700;transition:.15s}
+button:hover{border-color:var(--blue);color:var(--blue-d)}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.b3 button{padding:7px 0;flex:1 1 auto}
+.bt-run{background:#FDF1F0;border-color:#E9C2C1;color:#A85A58}
+.bt-stop{background:#F0F7F3;border-color:#BCDCC9;color:#3F7B5C}
+.bt-sm{flex:0 0 auto!important;padding:7px 12px!important;font-weight:600;color:var(--dim)}
+
+/* ── 우선순위 ── */
+.pri{display:flex;flex-direction:column;gap:11px}
+.pri .p{display:flex;align-items:center;gap:11px}
+.pri .n{width:26px;height:26px;border-radius:50%;background:var(--blue-l);color:var(--blue-d);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:600;flex:0 0 auto}
+.pri input{flex:1 1 auto;border:none;border-bottom:1.5px solid var(--dot);background:transparent;
+  font-family:var(--hand);font-size:17px;color:var(--ink);padding:2px 4px 4px;outline:none}
+.pri input:focus{border-bottom-color:var(--blue)}
+
+/* ── 도넛 ── */
+.donut{display:flex;align-items:center;gap:16px}
+.donut svg{width:104px;height:104px;flex:0 0 auto}
+.dread .big{font-family:var(--mono);font-size:27px;font-weight:600;letter-spacing:-.02em}
+.dread .sm{font-size:12px;color:var(--dim);margin-top:2px}
+.dread .tag{font-family:var(--hand);font-size:16px;color:var(--blue-d);margin-top:6px}
+
+/* ── 해빗 트래커 ── */
+table.hb{width:100%;border-collapse:collapse}
+table.hb th{font-family:var(--mono);font-size:10px;color:var(--dim);font-weight:500;padding-bottom:6px}
+table.hb td{padding:3px 0}
+table.hb td:first-child{font-size:12.5px;color:var(--ink);white-space:nowrap;padding-right:6px}
+.o{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--dot);margin:0 auto;display:block}
+.o.on{background:var(--blue);border-color:var(--blue)}
+.o.half{background:var(--blue-l);border-color:#B8C6E8}
+.o.fu{background:#F1F0E8;border-color:#E4E2D6}
+
+/* ── 잔류 부하 ── */
+.dfbox{background:var(--blue-xl);border-color:#D6DFF3}
+.dflist{display:flex;flex-direction:column;gap:7px}
+.dfi{display:flex;align-items:center;gap:9px;font-size:13px}
+.dfi b{width:6px;height:6px;border-radius:50%;background:var(--blue);flex:0 0 auto}
+.dfi span{flex:1 1 auto}
+.dfi em{font-family:var(--mono);font-size:12px;color:var(--rose);font-style:normal;font-weight:600}
+.empty{font-family:var(--hand);font-size:16px;color:var(--dim)}
+
+/* ── 내일 ── */
+.tmr{display:flex;flex-direction:column;gap:6px}
+.tmr .t{display:flex;gap:8px;font-size:12.5px;align-items:baseline}
+.tmr .t i{font-family:var(--mono);font-size:10px;color:var(--dimmer);font-style:normal;flex:0 0 auto;width:14px}
+.tmr .t s{text-decoration:none;color:var(--dim);flex:1 1 auto}
+
+/* ── 진도 ── */
+.prog{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+@media(max-width:1050px){.prog{grid-template-columns:1fr}}
+.pc-h{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-bottom:7px}
+.pc-h b{font-size:13.5px}
+.pc-h i{font-family:var(--mono);font-size:11px;color:var(--dim);font-style:normal}
+.pc-bar{height:6px;border-radius:99px;background:#EFEEE5;overflow:hidden;margin-bottom:9px}
+.pc-bar i{display:block;height:100%;background:var(--blue);border-radius:99px}
+.ul{display:flex;flex-direction:column;gap:2px;max-height:250px;overflow-y:auto;padding-right:4px}
+.ui{display:flex;gap:7px;align-items:flex-start;font-size:12px;line-height:1.35;cursor:pointer;padding:3px 2px;border-radius:5px}
+.ui:hover{background:#F7F8FC}
+.ui .bx{width:14px;height:14px;border-radius:4px;border:1.5px solid var(--dot);background:#fff;flex:0 0 auto;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff}
+.ui.on .bx{background:var(--blue);border-color:var(--blue)}
+.ui.on s{text-decoration:line-through;color:var(--dimmer)}
+.ui s{text-decoration:none}
+.ui.cur{background:#FFF6E9}
+
+/* ── 노트 / 리마인더 ── */
+.bot{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;margin-top:16px}
+@media(max-width:1050px){.bot{grid-template-columns:1fr}}
+textarea{
+  width:100%;min-height:150px;resize:vertical;border:1.5px solid var(--edge);border-radius:11px;padding:11px 13px;
+  font-family:var(--hand);font-size:17px;line-height:1.7;color:var(--ink);outline:none;
+  background-image:linear-gradient(#F3F2EA 1px,transparent 1px);background-size:100% 29px;background-position:0 8px;
+}
+textarea:focus{border-color:var(--blue)}
+.rem{display:flex;flex-direction:column;gap:9px}
+.rem div{display:flex;gap:9px;font-size:13px;color:var(--ink);line-height:1.45}
+.rem div b{color:var(--blue);flex:0 0 auto;font-weight:400}
+
+.foot{display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap}
+.foot button{padding:11px 22px}
+.foot .prim{background:var(--blue);border-color:var(--blue);color:#fff}
+.foot .prim:hover{background:var(--blue-d);color:#fff}
+input[type=date]{font-family:var(--mono);font-size:12px;border:1.5px solid var(--dot);border-radius:8px;padding:7px 10px;background:#fff;color:var(--ink)}
+.cfg{display:none;justify-content:center;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;font-size:12.5px;color:var(--dim)}
+.cfg.open{display:flex}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);
+  background:var(--blue-d);color:#fff;padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:600;
+  box-shadow:0 8px 22px rgba(60,70,110,.22);transition:transform .26s;z-index:60}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="sheet">
+<header>
+  <div class="htitle">
+    <span class="tape" style="top:-12px;left:-16px;transform:rotate(-8deg)"></span>
+    <span class="doodle" style="top:6px;right:-30px">✦</span>
+    <span class="doodle" style="top:44px;right:-46px;font-size:19px">♡</span>
+    <h1>Study Planner</h1>
+    <div class="sub">전기기사 동차합격 · 하루 한 장</div>
+    <div class="quote">"하루치만 한다. 어제 것까지 오늘 하려 들지 않는다." ♡</div>
+  </div>
+  <div class="datebox">
+    <div class="dl">Date : <b id="today"></b></div>
+    <div class="wdrow" id="wdrow"></div>
+    <div class="ddayline" id="dday"></div>
+  </div>
+</header>
+
+<div class="grid">
+  <!-- 왼쪽: 시간표 -->
+  <div class="card">
+    <div class="chead"><span class="lbl">Schedule</span><span class="cnote" id="schnote"></span></div>
+    <div class="sch" id="sch"></div>
+  </div>
+
+  <!-- 가운데: 오늘의 목표 + 우선순위 -->
+  <div class="stack">
+    <div class="card">
+      <span class="tape" style="top:-11px;right:22px;transform:rotate(5deg)"></span>
+      <div class="chead"><span class="lbl">Today's Goals</span><span class="cnote" id="blockcount"></span></div>
+      <div class="blks" id="blks"></div>
+    </div>
+    <div class="card">
+      <div class="chead"><span class="lbl peach">Top Priorities</span><span class="doodle" style="position:static">★</span></div>
+      <div class="pri" id="pri"></div>
+    </div>
+  </div>
+
+  <!-- 오른쪽 -->
+  <div class="stack">
+    <div class="card">
+      <div class="chead"><span class="lbl">Today's Meter</span></div>
+      <div class="donut">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="41" fill="none" stroke="#EFEEE5" stroke-width="11"></circle>
+          <circle id="ring" cx="50" cy="50" r="41" fill="none" stroke="var(--blue)" stroke-width="11"
+                  stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="0 999"></circle>
+        </svg>
+        <div class="dread">
+          <div class="big mono" id="ro-big">0:00</div>
+          <div class="sm mono" id="ro-sub"></div>
+          <div class="tag" id="ro-tag"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="chead"><span class="lbl">Habit Tracker</span><span class="cnote">이번 주</span></div>
+      <table class="hb" id="hb"></table>
+    </div>
+
+    <div class="card dfbox">
+      <div class="chead"><span class="lbl">Don't Forget</span><span class="cnote" id="bl-total"></span></div>
+      <div class="dflist" id="bl-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="chead"><span class="lbl">Tomorrow</span><span class="cnote" id="tmr-d"></span></div>
+      <div class="tmr" id="tmr"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <div class="chead"><span class="lbl">진도 · 단원</span><span class="cnote" id="progsum"></span></div>
+  <div class="prog" id="prog"></div>
+</div>
+
+<div class="bot">
+  <div class="card">
+    <div class="chead"><span class="lbl">Notes</span><span class="cnote">오늘 막힌 것 · 다시 볼 것</span></div>
+    <textarea id="note" placeholder="오늘 이해 안 된 부분, 다시 봐야 할 공식…"></textarea>
+  </div>
+  <div class="card">
+    <span class="tape" style="bottom:-10px;right:26px;transform:rotate(-4deg)"></span>
+    <div class="chead"><span class="lbl peach">Daily Reminders</span></div>
+    <div class="rem">
+      <div><b>♡</b><span>전기자기학은 과락만 면하면 된다. 40점이 목표다.</span></div>
+      <div><b>♡</b><span>전력공학은 객관식이라도 손으로 풀이를 쓴다. 실기가 필답형이다.</span></div>
+      <div><b>♡</b><span>금요일은 신규 진도 없음. 그 주에 틀린 것만 다시 푼다.</span></div>
+      <div><b>♡</b><span>단원은 시간이 아니라 <b style="color:var(--blue-d);font-weight:700">완료</b>를 눌러야 넘어간다.</span></div>
+      <div><b>♡</b><span>모의 70점이 안정되면 필기를 줄이고 실기로 넘어간다.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <button class="prim" id="closeday">하루 마감하고 이월</button>
+  <button id="cfgbtn">설정</button>
+</div>
+<div class="cfg" id="cfg">
+  <label for="examdate">필기 시험일</label>
+  <input type="date" id="examdate">
+  <button id="resetbtn">기록 전체 삭제</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════ 저장소 ════ */
+const KEY='ee-planner-v3',mem={};
+const Store={
+  async get(){
+    try{if(typeof window.storage!=='undefined'){const r=await window.storage.get(KEY);return r&&r.value?JSON.parse(r.value):null;}}catch(e){}
+    try{const v=localStorage.getItem(KEY);return v?JSON.parse(v):null;}catch(e){return mem[KEY]||null;}
+  },
+  async set(o){
+    const s=JSON.stringify(o);
+    try{if(typeof window.storage!=='undefined'){await window.storage.set(KEY,s);return;}}catch(e){}
+    try{localStorage.setItem(KEY,s);}catch(e){mem[KEY]=o;}
+  }
+};
+
+/* ════ 과목 · 커리큘럼 ════ */
+const SUBJ={em:{n:'전기자기학'},me:{n:'전기기기'},pw:{n:'전력공학'},ct:{n:'회로이론·제어'},
+  kec:{n:'전기설비기술기준'},mix:{n:'통합 정리'},xpw:{n:'실기·전력계통'},xkec:{n:'실기·KEC'},
+  xseq:{n:'실기·시퀀스'},xex:{n:'실기 필답'}};
+
+const CURR={
+  em:['벡터 해석 · 좌표계','진공 중의 정전계 (쿨롱·전계·가우스)','전위와 전위경도',
+    '도체계 (정전용량·정전에너지)','유전체 (분극·경계조건)','전기영상법',
+    '전류와 저항','정자계 (비오사바르·앙페르)','자성체와 자기회로',
+    '전자유도 (패러데이·렌츠)','인덕턴스 (자기·상호)','전자장 (맥스웰·전자파)'],
+  pw:['가공전선로 · 지지물 · 이도','지중전선로 · 케이블','선로정수와 코로나',
+    '송전선로 특성 (단·중·장거리)','전력원선도와 조상설비','안정도','중성점 접지방식',
+    '고장계산 ①: %임피던스 · 단락전류','고장계산 ②: 대칭좌표법','유도장해와 대책',
+    '이상전압 · 피뢰기 · 절연협조','개폐기 · 차단기','보호계전기','배전방식과 공급방식',
+    '배전선로 계산 (전압강하·손실)','역률 개선과 콘덴서 용량','수변전설비 · 변압기 용량',
+    '수력발전','화력발전','원자력발전'],
+  me:['직류기 ①: 구조와 원리','직류발전기 (특성곡선·병렬운전)','직류전동기 (속도·토크·제어)',
+    '직류기 손실 · 효율 · 시험','동기발전기 ①: 유기기전력·전기자반작용',
+    '동기발전기 ②: 단락비·병렬운전','동기전동기 (V곡선·위상특성)',
+    '변압기 ①: 원리 · 등가회로','변압기 ②: 전압변동률 · 효율','변압기 ③: 결선과 3상',
+    '변압기 ④: 병렬운전 · 시험 · 보호','유도전동기 ①: 회전자계 · 슬립',
+    '유도전동기 ②: 토크 특성 · 비례추이','유도전동기 ③: 기동 · 속도제어 · 제동',
+    '단상 유도전동기 · 2중 농형','정류기 ①: 다이오드 정류회로','정류기 ②: SCR 위상제어',
+    '특수기기 (스테핑 · 서보)'],
+  ct:['직류회로와 저항 접속','정현파 교류 (실효·평균·위상)','R-L-C 기본 교류회로',
+    '교류전력 (유효·무효·역률)','공진회로','유도결합회로','회로망 정리 (테브난·중첩)',
+    '3상 교류 ①: 결선','3상 교류 ②: 전력측정 · V결선','대칭좌표법','비정현파 교류',
+    '2단자망 · 4단자망','분포정수회로','라플라스 변환','과도현상',
+    '제어 ①: 전달함수 · 블록선도','제어 ②: 신호흐름선도','제어 ③: 시간응답 · 정상편차',
+    '제어 ④: 주파수응답 · 보드선도','제어 ⑤: 안정도 판별','제어 ⑥: 근궤적',
+    '제어 ⑦: 상태방정식 · z변환','시퀀스 제어와 논리회로'],
+  kec:['총칙 · 용어 · 전압의 구분','전선의 종류 · 굵기 · 절연저항','접지시스템 ①: 종류와 구성',
+    '접지시스템 ②: 접지도체 · 보호도체','피뢰시스템','저압 안전보호 (감전 · 과전류)',
+    '저압 배선방법 (공사 종류)','저압 옥내 · 특수장소','고압 · 특고압 기기 시설',
+    '가공전선로 ①: 지지물 · 풍압하중','가공전선로 ②: 이격거리 · 보안공사','지중전선로',
+    '발전소 · 변전소 시설','전기철도설비','분산형전원 · 신재생'],
+  xpw:['수변전설비 결선도','변압기 용량 산정','단락전류 · 차단용량','보호계전기 정정',
+    '역률개선 · 콘덴서','조명 계산','전선 굵기 · 전압강하','접지 계산','예비전원설비',
+    '수용률 · 부하율 · 부등률'],
+  xkec:['접지시스템 서술','저압 배선방법 서술','가공전선로 이격거리','피뢰시스템',
+    '안전보호 조치','특수장소 시설','분산형전원'],
+  xseq:['기본 논리회로','자기유지 회로','타이머 회로','인터록 회로','전동기 기동 회로',
+    'Y-Δ 기동 회로','시퀀스 도면 완성 연습'],
+  xex:['실기 기출 1회분 손풀이']
+};
+const SETS=(()=>{const a=[];for(let y=2025;y>=2016;y--)for(let s=3;s>=1;s--)a.push(y+'년 '+s+'회');return a;})();
+
+/* ════ 단계 ════ */
+const START='2026-09-01';
+const PHASES=[
+ {id:'P1',name:'개념',from:'2026-09-01',to:'2026-10-18',focus:'인강 1회독 · 5과목 동시',mode:'unit',
+  how:'인강 듣고 → 바인더에 개념 1장 정리',
+  blocks:[['A','em',90],['B','me',120],['C','pw',120],['D','ct',120],['E','kec',60],['F','mix',90]]},
+ {id:'P2',name:'단원별 기출',from:'2026-10-19',to:'2026-12-06',focus:'subtopic 단위로 몰아 풀기',mode:'unit',
+  how:'이 단원 기출만 몰아 풀고 → 오답 등록',
+  blocks:[['A','em',90],['B','me',120],['C','pw',120],['D','ct',120],['E','kec',60],['F','mix',90]]},
+ {id:'P3',name:'세트 회독',from:'2026-12-07',to:'2027-01-17',focus:'1일 1세트 · 오답 복기',mode:'set',
+  how:'어제 세트에서 이 과목 틀린 것만',
+  blocks:[['A','em',90],['B','me',120],['C','pw',120],['D','ct',60],['E','kec',60],['F','mix',150]]},
+ {id:'P4',name:'실전 + 실기 착수',from:'2027-01-18',to:'2027-02-28',focus:'시간 재고 풀기 · 실기 시작',mode:'set',
+  how:'실기 출제 범위 위주로 복기',
+  blocks:[['A','em',60],['B','me',90],['C','pw',120],['D','ct',60],['E','kec',90],['F','mix',180]]},
+ {id:'P5',name:'실기 전환',from:'2027-03-01',to:'2027-04-30',focus:'필답형 전면 전환',mode:'unit',
+  how:'식 → 대입 → 답 → 단위, 손으로 4단계',
+  blocks:[['A','xpw',180],['B','xkec',150],['C','xseq',120],['D','xex',150]]}
+];
+const P0={id:'P0',name:'준비 기간',focus:'플랜 시작 전 · 자율',mode:'unit',how:'자율',
+  blocks:[['A','em',0],['B','me',0],['C','pw',0],['D','ct',0],['E','kec',0],['F','mix',0]]};
+const phaseFor=ds=>ds<START?P0:(PHASES.find(p=>ds>=p.from&&ds<=p.to)||PHASES[PHASES.length-1]);
+const dow=ds=>new Date(ds+'T00:00:00').getDay();
+const isWE=ds=>dow(ds)===0||dow(ds)===6, isFR=ds=>dow(ds)===5;
+
+/* ════ 상태 ════ */
+let S=null;
+const DEF={examDate:'2027-03-07',days:{},backlog:{},units:{},setIdx:0,timer:null,lastSeen:null};
+const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const todayStr=()=>fmt(new Date());
+const addDays=(ds,n)=>{const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()+n);return fmt(d);};
+function dayOf(ds){ if(!S.days[ds]) S.days[ds]={done:{},closed:false,note:'',pri:['','','']};
+  const d=S.days[ds]; d.pri=d.pri||['','','']; if(d.note===undefined)d.note=''; return d; }
+const hm=m=>{m=Math.max(0,Math.round(m));return Math.floor(m/60)+':'+String(m%60).padStart(2,'0');};
+const minText=m=>{m=Math.round(m);if(m<60)return m+'분';const h=Math.floor(m/60),r=m%60;return r?h+'시간 '+r+'분':h+'시간';};
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const uKey=(s,p)=>s+'|'+p;
+function uDone(s,p){const k=uKey(s,p);if(!S.units[k])S.units[k]=[];return S.units[k];}
+function curIdx(s,p){const l=CURR[s];if(!l)return -1;const d=uDone(s,p);
+  for(let i=0;i<l.length;i++) if(!d.includes(i)) return i; return -1;}
+function toggleUnit(s,p,i){const d=uDone(s,p),a=d.indexOf(i); a>=0?d.splice(a,1):d.push(i);}
+const progPhase=ds=>{const p=phaseFor(ds);return p.mode==='unit'?p.id:'P2';};
+
+/* 블록 목록 */
+function blocksFor(ds){
+  const p=phaseFor(ds),we=isWE(ds),fr=isFR(ds);
+  return p.blocks.map(([id,s,min])=>{
+    let u;
+    if(s==='mix'){
+      u = p.mode==='set'
+        ? {no:'SET '+(S.setIdx+1)+' / '+SETS.length,t:SETS[Math.min(S.setIdx,SETS.length-1)]+' 기출 100문제',d:'60분 타이머 → 채점 → 오답 등록',k:'set'}
+        : {no:'정리',t:'오늘 5과목 한 장 요약',d:'각 블록에서 새로 안 것만 바인더에',k:'free'};
+    } else if(p.mode==='unit'){
+      const i=curIdx(s,p.id),l=CURR[s]||[];
+      u = i<0?{no:'DONE',t:'이 단계 전 단원 완료',d:'약한 단원 자유 복습',k:'none'}
+             :{no:String(i+1).padStart(2,'0')+' / '+l.length,t:l[i],d:p.how,k:'unit',i};
+    } else u={no:'복기',t:'어제 세트 · '+SUBJ[s].n+' 오답',d:p.how,k:'free'};
+    if(fr&&!we) u={no:'회수일',t:'이번 주 오답 재풀이 · '+SUBJ[s].n,d:'신규 진도 없음',k:'free'};
+    if(we) u={no:'자율',t:'주말 · 자율',d:'잔류 부하를 털어도 됩니다',k:'free'};
+    return {id,s,min:we?0:min,u};
+  });
+}
+/* 시간표: 09:00 시작, 블록 사이 15분, 2번째 뒤 점심 60분, 4번째 뒤 저녁 60분 */
+function schedule(ds){
+  const bs=blocksFor(ds); let t=9*60; const out=[];
+  bs.forEach((b,i)=>{
+    if(b.min<=0){ out.push({...b,s:null}); return; }
+    out.push({...b,s:t,e:t+b.min}); t+=b.min;
+    t += (i===1?60:(i===3?60:15));
+  });
+  return out;
+}
+
+/* ════ 마감 · 이월 ════ */
+function closeDay(ds){
+  const d=dayOf(ds); if(d.closed) return;
+  for(const b of blocksFor(ds)){
+    const done=d.done[b.id]||0,n=Math.max(0,(S.backlog[b.s]||0)+(b.min-done));
+    if(n>=1) S.backlog[b.s]=n; else delete S.backlog[b.s];
+  }
+  d.closed=true;
+}
+function commitTimer(t){const m=(Date.now()-t.startTs)/60000,d=dayOf(t.date);d.done[t.blockId]=(d.done[t.blockId]||0)+m;}
+function catchUp(){
+  const t=todayStr();
+  if(S.timer&&S.timer.date!==t){commitTimer(S.timer);S.timer=null;}
+  let d=S.lastSeen||t,g=0;
+  while(d<t&&g++<400){ if(S.days[d]&&!S.days[d].closed) closeDay(d); d=addDays(d,1); }
+  S.lastSeen=t;
+}
+function live(ds,id){const b=dayOf(ds).done[id]||0;
+  return (S.timer&&S.timer.date===ds&&S.timer.blockId===id)?b+(Date.now()-S.timer.startTs)/60000:b;}
+function dayTotal(ds){const d=S.days[ds];let t=d?Object.values(d.done).reduce((a,b)=>a+b,0):0;
+  if(S.timer&&S.timer.date===ds)t+=(Date.now()-S.timer.startTs)/60000;return t;}
+
+/* ════ 렌더 ════ */
+let tickH=null;
+const WD=['일','월','화','수','목','금','토'], WDE=['S','M','T','W','T','F','S'];
+
+function render(){
+  const ds=todayStr(),p=phaseFor(ds),blocks=blocksFor(ds),day=dayOf(ds),we=isWE(ds);
+
+  /* 헤더 */
+  document.getElementById('today').textContent=ds+' ('+WD[dow(ds)]+')';
+  document.getElementById('wdrow').innerHTML=[1,2,3,4,5,6,0].map(d=>
+    `<div class="wd ${d===dow(ds)?'on':''}"><i></i>${WDE[d]}</div>`).join('');
+  const dd=Math.ceil((new Date(S.examDate+'T00:00:00')-new Date(ds+'T00:00:00'))/86400000);
+  document.getElementById('dday').innerHTML=
+    (dd>=0?'필기까지 <b>D-'+dd+'</b>':'필기 <b>D+'+(-dd)+'</b>')+
+    ' &nbsp;·&nbsp; '+p.id+' '+(we?'주말 자율':(isFR(ds)?'회수일':p.name))+'<br>'+esc(p.focus);
+
+  /* 시간표 */
+  const sch=schedule(ds), H0=8, H1=23, HH=32;
+  let rows='';
+  for(let h=H0;h<=H1;h++) rows+=`<div class="hr"><span>${h%12===0?12:h%12} ${h<12?'AM':'PM'}</span><u></u></div>`;
+  const nowM=new Date().getHours()*60+new Date().getMinutes();
+  const lanes=sch.filter(b=>b.s!=null).map(b=>{
+    const top=(b.s-H0*60)/60*HH, hgt=Math.max(24,(b.e-b.s)/60*HH-3);
+    const m=live(ds,b.id), fin=b.min>0&&m>=b.min, now=nowM>=b.s&&nowM<b.e;
+    const t2=x=>String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0');
+    return `<div class="sblk ${fin?'fin':(now?'now':'')}" style="top:${top}px;height:${hgt}px">
+      <b>${b.id} · ${esc(SUBJ[b.s].n)}</b><i>${t2(b.s)}–${t2(b.e)}</i></div>`;
+  }).join('');
+  document.getElementById('sch').innerHTML=rows+`<div class="schlane">${lanes}</div>`;
+  document.getElementById('schnote').textContent= we?'주말 · 자율':'09:00 시작';
+
+  /* 계기 */
+  let total=0,target=0;
+  for(const b of blocks){total+=live(ds,b.id);target+=b.min;}
+  const pctAll=target?Math.min(1,total/target):0, C=2*Math.PI*41;
+  document.getElementById('ring').setAttribute('stroke-dasharray',(pctAll*C).toFixed(1)+' '+C.toFixed(1));
+  document.getElementById('ro-big').textContent=hm(total);
+  document.getElementById('ro-sub').textContent=target?'목표 '+hm(target)+' · '+Math.round(pctAll*100)+'%':'목표 없음 · 자율';
+  document.getElementById('ro-tag').textContent=
+    !target?'오늘은 쉬어도 됩니다':pctAll>=1?'오늘 목표 달성 ♡':pctAll>=.6?'절반은 넘겼습니다':pctAll>0?'시작이 반입니다':'첫 블록부터 시작해요';
+
+  /* 오늘의 목표 */
+  const fc=blocks.filter(b=>b.min>0&&live(ds,b.id)>=b.min).length;
+  document.getElementById('blockcount').textContent=fc+' / '+blocks.length+' 달성';
+  document.getElementById('blks').innerHTML=blocks.map(b=>{
+    const m=live(ds,b.id),run=S.timer&&S.timer.date===ds&&S.timer.blockId===b.id;
+    const fin=b.min>0&&m>=b.min,pct=b.min?Math.min(100,m/b.min*100):(m>0?100:0);
+    const can=b.u.k==='unit'||b.u.k==='set';
+    return `<div class="blk ${run?'run':(fin?'fin':'')}">
+      <div class="b1"><span class="dotmark"></span><span class="bcode mono">${b.id}</span>
+        <span class="bname">${esc(SUBJ[b.s].n)}</span><span class="btime mono">${b.min?b.min+'분':'자율'}</span></div>
+      <div class="bunit"><div class="bu-n mono">${esc(b.u.no)}</div>
+        <div class="bu-t">${esc(b.u.t)}</div><div class="bu-d">${esc(b.u.d)}</div></div>
+      <div class="b2"><span class="pbar"><i style="width:${pct.toFixed(1)}%"></i></span>
+        <span class="pnum mono">${hm(m)}${b.min?' / '+hm(b.min):''}</span></div>
+      <div class="b3">
+        <button class="${run?'bt-stop':'bt-run'}" data-a="t" data-id="${b.id}">${run?'⏸ 정지':'▶ 시작'}</button>
+        ${can?`<button data-a="n" data-s="${b.s}" data-i="${b.u.i!==undefined?b.u.i:-1}" data-k="${b.u.k}">✓ 완료</button>`:''}
+        <button class="bt-sm" data-a="e" data-id="${b.id}">± 직접입력</button>
+      </div></div>`;
+  }).join('');
+
+  /* 우선순위 */
+  document.getElementById('pri').innerHTML=[0,1,2].map(i=>
+    `<div class="p"><span class="n mono">${i+1}</span>
+      <input data-a="p" data-i="${i}" value="${esc(day.pri[i]||'')}" placeholder="${
+        i===0?'오늘 반드시 끝낼 것':i===1?'두 번째':'세 번째'}"></div>`).join('');
+
+  /* 해빗 트래커 */
+  const mon=addDays(ds,-((dow(ds)+6)%7));
+  const wkd=[0,1,2,3,4,5,6].map(i=>addDays(mon,i));
+  const subs=(p.id==='P5')?['xpw','xkec','xseq','xex']:['em','me','pw','ct','kec'];
+  let hb='<tr><th></th>'+wkd.map(d=>'<th>'+WDE[dow(d)]+'</th>').join('')+'</tr>';
+  for(const s of subs){
+    hb+='<tr><td>'+SUBJ[s].n+'</td>'+wkd.map(d=>{
+      const bl=blocksFor(d).find(b=>b.s===s);
+      if(!bl||bl.min===0) return '<td><span class="o fu"></span></td>';
+      const done=(S.days[d]&&S.days[d].done[bl.id])||0;
+      const c=done>=bl.min?'on':(done>0?'half':'');
+      return '<td><span class="o '+c+'"></span></td>';
+    }).join('')+'</tr>';
+  }
+  hb+='<tr><td>하루 마감</td>'+wkd.map(d=>
+    '<td><span class="o '+((S.days[d]&&S.days[d].closed)?'on':'')+'"></span></td>').join('')+'</tr>';
+  document.getElementById('hb').innerHTML=hb;
+
+  /* 잔류 부하 */
+  const bl=Object.entries(S.backlog).filter(([,v])=>v>=1).sort((a,b)=>b[1]-a[1]);
+  const blT=bl.reduce((a,[,v])=>a+v,0);
+  document.getElementById('bl-total').textContent=blT<1?'':minText(blT);
+  document.getElementById('bl-list').innerHTML = blT<1
+    ? '<div class="empty">밀린 분량 없음 ♡</div>'
+    : bl.map(([k,v])=>`<div class="dfi"><b></b><span>${SUBJ[k]?SUBJ[k].n:k}</span><em>${minText(v)}</em></div>`).join('')
+      + `<div class="bl-note" style="font-size:11.5px;color:var(--dim);margin-top:4px">${
+        blT>300?'5시간 넘게 밀렸습니다. 주말에 털거나 목표를 낮추세요.':'목표를 넘긴 시간은 마감할 때 자동 차감됩니다.'}</div>`;
+
+  /* 내일 */
+  const tm=addDays(ds,1);
+  document.getElementById('tmr-d').textContent=tm.slice(5)+' ('+WD[dow(tm)]+')';
+  document.getElementById('tmr').innerHTML=blocksFor(tm).map(b=>
+    `<div class="t"><i>${b.id}</i><s>${esc(b.u.t)}</s></div>`).join('');
+
+  /* 진도 */
+  const pid=progPhase(ds);
+  let aD=0,aT=0;
+  document.getElementById('prog').innerHTML=subs.map(s=>{
+    const l=CURR[s]||[],d=uDone(s,pid),cur=curIdx(s,pid);
+    aD+=d.length;aT+=l.length;
+    return `<div><div class="pc-h"><b>${SUBJ[s].n}</b><i class="mono">${d.length}/${l.length}</i></div>
+      <div class="pc-bar"><i style="width:${(l.length?d.length/l.length*100:0).toFixed(1)}%"></i></div>
+      <div class="ul">${l.map((t,i)=>
+        `<div class="ui ${d.includes(i)?'on':''} ${i===cur?'cur':''}" data-a="u" data-s="${s}" data-i="${i}">
+          <span class="bx">${d.includes(i)?'✓':''}</span><s>${esc(t)}</s></div>`).join('')}</div></div>`;
+  }).join('');
+  document.getElementById('progsum').textContent=pid+' 회독 · '+aD+' / '+aT+' 단원';
+
+  /* 노트 */
+  const nt=document.getElementById('note');
+  if(document.activeElement!==nt) nt.value=day.note||'';
+
+  clearInterval(tickH); if(S.timer) tickH=setInterval(render,1000);
+}
+
+/* ════ 동작 ════ */
+let tt;const toast=m=>{const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2300);};
+const save=()=>Store.set(S);
+
+document.getElementById('blks').addEventListener('click',async e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const ds=todayStr(),a=b.dataset.a;
+  if(a==='t'){
+    const id=b.dataset.id;
+    if(S.timer&&S.timer.blockId===id&&S.timer.date===ds){commitTimer(S.timer);S.timer=null;toast('기록했습니다');}
+    else{if(S.timer)commitTimer(S.timer);S.timer={blockId:id,date:ds,startTs:Date.now()};}
+  }
+  if(a==='n'){
+    if(b.dataset.k==='set'){S.setIdx=Math.min(S.setIdx+1,SETS.length-1);toast('다음 회차로 넘어갑니다');}
+    else{const i=+b.dataset.i;if(i>=0){toggleUnit(b.dataset.s,progPhase(ds),i);toast('단원 완료 ♡');}}
+  }
+  if(a==='e'){
+    const id=b.dataset.id,c=Math.round(dayOf(ds).done[id]||0);
+    const v=prompt('기록할 분(minute)을 직접 입력하세요',String(c));
+    if(v!==null&&v.trim()!==''&&!isNaN(+v))dayOf(ds).done[id]=Math.max(0,+v);
+  }
+  await save();render();
+});
+
+document.getElementById('prog').addEventListener('click',async e=>{
+  const u=e.target.closest('[data-a="u"]');if(!u)return;
+  toggleUnit(u.dataset.s,progPhase(todayStr()),+u.dataset.i);
+  await save();render();
+});
+
+document.getElementById('pri').addEventListener('input',async e=>{
+  if(e.target.dataset.a!=='p')return;
+  dayOf(todayStr()).pri[+e.target.dataset.i]=e.target.value;await save();
+});
+let nT;document.getElementById('note').addEventListener('input',e=>{
+  dayOf(todayStr()).note=e.target.value;clearTimeout(nT);nT=setTimeout(save,500);
+});
+
+document.getElementById('closeday').addEventListener('click',async()=>{
+  const ds=todayStr();
+  if(S.timer){commitTimer(S.timer);S.timer=null;}
+  if(dayOf(ds).closed){toast('오늘은 이미 마감했습니다');return;}
+  const b0=Object.values(S.backlog).reduce((a,b)=>a+b,0);
+  closeDay(ds);
+  const df=Object.values(S.backlog).reduce((a,b)=>a+b,0)-b0;
+  await save();render();
+  toast(df>0?minText(df)+' 이월했습니다':df<0?minText(-df)+' 차감했습니다':'마감했습니다. 이월 없음 ♡');
+});
+document.getElementById('cfgbtn').addEventListener('click',()=>document.getElementById('cfg').classList.toggle('open'));
+document.getElementById('examdate').addEventListener('change',async e=>{if(e.target.value){S.examDate=e.target.value;await save();render();}});
+document.getElementById('resetbtn').addEventListener('click',async()=>{
+  if(!confirm('기록을 전부 지웁니다. 되돌릴 수 없습니다.'))return;
+  S=JSON.parse(JSON.stringify(DEF));S.lastSeen=todayStr();await save();render();toast('기록을 지웠습니다');
+});
+
+(async function(){
+  S=Object.assign(JSON.parse(JSON.stringify(DEF)),await Store.get()||{});
+  S.days=S.days||{};S.backlog=S.backlog||{};S.units=S.units||{};S.setIdx=S.setIdx||0;
+  catchUp();await save();
+  document.getElementById('examdate').value=S.examDate;
+  render();
+})();
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='visible'&&S){
+    if(S.lastSeen!==todayStr()){catchUp();await save();}
+    render();
+  }
+});
+</script>
